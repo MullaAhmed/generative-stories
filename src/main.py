@@ -7,7 +7,6 @@ Main entry point for running story simulations.
 
 import os
 import sys
-import argparse
 from datetime import datetime
 from typing import Optional
 
@@ -17,6 +16,13 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from core.simulation_engine import SimulationEngine
 from utils.data_loaders import load_config, load_scenario, save_story
 from utils.memory_management import MemoryManager
+
+# Hardcoded configuration variables
+CONFIG_PATH = None  # Use default config
+SCENARIO_NAME = None  # Use default scenario
+SAVE_NAME = None  # Auto-generate save name
+INTERACTIVE_MODE = True  # Run in interactive mode
+VERBOSE = True  # Show detailed output
 
 def setup_environment():
     """Set up the environment and check dependencies"""
@@ -201,32 +207,23 @@ def interactive_mode():
 
 def main():
     """Main entry point"""
-    parser = argparse.ArgumentParser(description="Generative Stories - Multi-Agent Narrative Engine")
-    parser.add_argument("--config", "-c", help="Path to configuration file")
-    parser.add_argument("--scenario", "-s", help="Name of scenario to load")
-    parser.add_argument("--save-name", "-n", help="Name for saving the story")
-    parser.add_argument("--interactive", "-i", action="store_true", help="Run in interactive mode")
-    parser.add_argument("--quiet", "-q", action="store_true", help="Run quietly (minimal output)")
-    
-    args = parser.parse_args()
-    
     # Set up environment
     setup_environment()
     
-    if args.interactive:
+    if INTERACTIVE_MODE:
         interactive_mode()
     else:
         # Run with command line arguments
-        verbose = not args.quiet
+        verbose = VERBOSE
         
         story_path = run_simulation(
-            config_path=args.config,
-            scenario_name=args.scenario,
-            save_name=args.save_name,
+            config_path=CONFIG_PATH,
+            scenario_name=SCENARIO_NAME,
+            save_name=SAVE_NAME,
             verbose=verbose
         )
         
-        if story_path and not args.quiet:
+        if story_path and verbose:
             print(f"\n✨ Story generated successfully: {story_path}")
 
 if __name__ == "__main__":
