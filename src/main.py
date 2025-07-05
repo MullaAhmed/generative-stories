@@ -30,48 +30,48 @@ VERBOSE = True  # Show detailed output
 CUSTOM_CHARACTER_DATA = {
     "agents": [
         {
-            "name": "Lyralei Nightwhisper",
-            "description": "A fierce High Fae warrior with violet eyes that seem to hold starlight. Once a mortal huntress, she was Made into Fae during the War of Shadows. Her beauty is otherworldly, with pointed ears and an ethereal grace that belies her deadly skills with twin daggers. She bears intricate tattoos that tell the story of her transformation and the bargains she's made.",
-            "personality_traits": ["fierce", "protective", "stubborn", "loyal", "quick-tempered", "compassionate", "strategic"],
-            "background": "Born in a mortal village on the border between the human lands and the Spring Court, Lyralei was trained as a huntress from childhood. During a brutal attack by shadow creatures, she made a desperate bargain with a High Lord to save her younger sister, trading her mortality for power. Now she serves as an emissary between courts while searching for a way to break the magical bonds that tie her fate to ancient prophecies.",
-            "starting_location": "Night Court Palace",
-            "goals": ["protect her sister from court politics", "master her newfound Fae powers", "uncover the truth about the prophecy", "forge alliances between courts"],
-            "fears": ["losing her humanity completely", "her sister being used as leverage", "the darkness within her magic consuming her", "failing those she's sworn to protect"],
-            "magical_abilities": ["shadow manipulation", "enhanced speed and strength", "truth-sensing", "dream-walking"],
-            "relationships": {"Kael": 0.3, "Seraphina": -0.2, "Thorne": 0.1}
+            "name": "Zara Voidheart",
+            "description": "A fierce Stellar Operative with cybernetic violet eyes that can interface directly with quantum networks. Once a baseline human from the Outer Rim colonies, she was enhanced with experimental nanotechnology during the Void War. Her beauty is striking yet artificial - perfect features sculpted by genetic modification, with neural interface ports along her temples that glow softly when active. Intricate bio-luminescent tattoos map her body, each one representing a mission completed or a life saved.",
+            "personality_traits": ["fierce", "protective", "stubborn", "loyal", "quick-tempered", "compassionate", "strategic", "tech-savvy"],
+            "background": "Born on a mining colony in the Kepler Sector, Zara was recruited by the Shadow Fleet after her family was killed in a corporate raid. She volunteered for the experimental Void Walker program, trading her baseline humanity for enhanced abilities and a chance at revenge. Now she serves as a liaison between the major galactic powers while hunting for the truth behind the ancient AI prophecies that seem to predict galactic war.",
+            "starting_location": "Shadow Fleet Command",
+            "goals": ["protect the Outer Rim colonies from corporate exploitation", "master her quantum enhancement abilities", "uncover the truth about the AI prophecies", "forge peace between the galactic powers"],
+            "fears": ["losing her remaining humanity to the enhancements", "her past being used against innocent people", "the quantum void consuming her consciousness", "failing those who depend on her"],
+            "technological_abilities": ["quantum phase shifting", "enhanced reflexes and strength", "truth-detection algorithms", "consciousness projection"],
+            "relationships": {"Kai": 0.3, "Sera": -0.2, "Thane": 0.1}
         },
         {
-            "name": "Kael Shadowmere",
-            "description": "The enigmatic High Lord of the Night Court, with midnight-black hair and eyes like dark sapphires that seem to see into one's very soul. His presence commands attention and respect, radiating power that makes the air itself seem to thrum with magic. Centuries old, he carries himself with the confidence of someone who has survived countless wars and political machinations. His hands bear scars from ancient battles, and his smile can be either devastatingly charming or terrifyingly cold.",
-            "personality_traits": ["calculating", "protective", "mysterious", "charismatic", "ruthless when necessary", "deeply loyal", "burdened by responsibility"],
-            "background": "Born into power during the Age of Legends, Kael has ruled the Night Court for over 500 years. He survived the War of Shadows that nearly destroyed all Fae courts, emerging as one of the most powerful High Lords. His court is known for its spies and information networks, but also for protecting those who cannot protect themselves. He bears the weight of ancient magic and terrible knowledge about threats that still lurk in the shadows.",
-            "starting_location": "Night Court Palace",
-            "goals": ["protect his court from ancient threats", "maintain the delicate balance between courts", "train Lyralei in her powers", "prevent the return of the Shadow King"],
-            "fears": ["the corruption of his court", "losing those he cares about to war", "the ancient darkness breaking free", "becoming the monster others believe him to be"],
-            "magical_abilities": ["darkness manipulation", "mind shields", "winnowing (teleportation)", "death magic", "court magic"],
-            "relationships": {"Lyralei": 0.4, "Seraphina": -0.5, "Thorne": 0.2}
+            "name": "Kai Shadowborn",
+            "description": "The enigmatic Admiral of the Shadow Fleet, with jet-black hair and cybernetic eyes that shift between deep blue and silver depending on his neural activity. His presence commands both fear and respect, his body enhanced with military-grade augmentations that make him faster and stronger than baseline humans. Decades of command show in his bearing, and his hands bear scars from both physical battles and neural interface burns. His smile can be devastatingly charming or coldly calculating, depending on the situation.",
+            "personality_traits": ["calculating", "protective", "mysterious", "charismatic", "ruthlessly efficient", "deeply loyal", "burdened by command"],
+            "background": "Born in the deep space stations of the Shadow Sector, Kai rose through the ranks during the Corporate Wars, becoming the youngest Admiral in Shadow Fleet history. His fleet specializes in intelligence gathering and covert operations, but also in protecting colonies that can't protect themselves. He carries the burden of classified knowledge about ancient alien threats and rogue AIs that still lurk in the dark between stars.",
+            "starting_location": "Shadow Fleet Command",
+            "goals": ["protect the Shadow Sector from corporate and alien threats", "maintain the balance of power between galactic factions", "train Zara in quantum combat", "prevent the awakening of the Void Entities"],
+            "fears": ["his fleet being corrupted by alien influence", "losing his crew to endless wars", "the ancient alien darkness returning", "becoming the tyrant others believe him to be"],
+            "technological_abilities": ["quantum stealth systems", "neural firewalls", "instantaneous fleet communication", "void energy manipulation", "tactical precognition"],
+            "relationships": {"Zara": 0.4, "Sera": -0.5, "Thane": 0.2}
         },
         {
-            "name": "Seraphina Dawnbreaker",
-            "description": "The radiant High Lady of the Dawn Court, with golden hair that seems to capture sunlight and amber eyes that burn with inner fire. Her beauty is legendary even among the Fae, but it's her fierce intelligence and unwavering moral compass that make her truly formidable. She wears flowing gowns that seem to be woven from light itself, and her presence brings warmth to any room. Despite her ethereal appearance, she's a skilled warrior who fights with weapons forged from pure sunlight.",
-            "personality_traits": ["righteous", "determined", "prideful", "just", "sometimes inflexible", "passionate", "natural leader"],
-            "background": "Seraphina ascended to power after her predecessor fell in the War of Shadows, chosen by the court's magic itself for her pure heart and unwavering dedication to justice. She has spent decades rebuilding her court and establishing it as a beacon of hope and order. However, she struggles with the gray areas of politics and the sometimes necessary compromises that leadership demands. Her court values honor, truth, and the protection of the innocent above all else.",
-            "starting_location": "Dawn Court Embassy",
-            "goals": ["establish lasting peace between all courts", "root out corruption wherever it hides", "prove the Dawn Court's strength and legitimacy", "protect mortal lands from Fae conflicts"],
-            "fears": ["compromising her principles for political gain", "her court being seen as weak", "the return of chaos and war", "failing to live up to her predecessor's legacy"],
-            "magical_abilities": ["light manipulation", "healing magic", "truth compulsion", "protective wards", "purification magic"],
-            "relationships": {"Lyralei": -0.1, "Kael": -0.4, "Thorne": 0.3}
+            "name": "Sera Lightbringer",
+            "description": "The radiant Chancellor of the Solar Federation, with golden hair enhanced with fiber-optic strands that shimmer with data streams, and amber eyes that burn with both intelligence and righteous fury. Her beauty is enhanced but not artificial - genetic optimization rather than crude modification. She wears flowing robes embedded with holographic displays and energy conduits, and her presence seems to brighten any room through both charisma and actual light-manipulation technology. Despite her elegant appearance, she's a skilled combatant who fights with plasma weapons and energy shields.",
+            "personality_traits": ["righteous", "determined", "prideful", "just", "sometimes inflexible", "passionate", "natural leader", "technologically gifted"],
+            "background": "Sera rose to power after her mentor was assassinated during the Corporate Wars, chosen by the Federation's AI Council for her incorruptible moral code and brilliant strategic mind. She has spent years rebuilding the Federation and establishing it as a beacon of hope and order in the galaxy. However, she struggles with the moral compromises that galactic politics demands. Her Federation values transparency, justice, and the protection of all sentient life.",
+            "starting_location": "Solar Federation Embassy",
+            "goals": ["establish lasting peace between all galactic powers", "root out corporate corruption", "prove the Federation's moral authority", "protect colony worlds from exploitation"],
+            "fears": ["compromising her principles for political expediency", "the Federation being seen as weak", "the return of the Corporate Wars", "failing to live up to her mentor's legacy"],
+            "technological_abilities": ["solar energy manipulation", "nano-medical systems", "truth-verification algorithms", "defensive energy shields", "data purification protocols"],
+            "relationships": {"Zara": -0.1, "Kai": -0.4, "Thane": 0.3}
         },
         {
-            "name": "Thorne Ironwood",
-            "description": "A gruff but honorable Fae lord from the Autumn Court, with russet hair and eyes the color of amber. His skin bears the marks of countless battles, and his hands are calloused from both sword work and his love of crafting. He's built like a warrior but moves with surprising grace, and his deep voice carries the authority of someone used to command. He favors practical clothing in earth tones, often adorned with the symbols of his house - oak leaves and crossed swords.",
-            "personality_traits": ["honorable", "straightforward", "protective", "sometimes hot-headed", "deeply loyal", "practical", "values tradition"],
-            "background": "Thorne serves as the Autumn Court's military commander and ambassador to other courts. He comes from an ancient line of Fae warriors who have served the Autumn Court for millennia. His family's lands border the mortal realm, making him one of the few High Fae who regularly interacts with humans and understands their struggles. He lost his younger brother in the War of Shadows and has dedicated his life to preventing such tragedies from happening again.",
-            "starting_location": "Autumn Court Barracks",
-            "goals": ["strengthen military alliances between courts", "honor his fallen brother's memory", "protect the border territories", "train the next generation of warriors"],
-            "fears": ["another war breaking out", "failing to protect those under his command", "his court being drawn into conflicts", "losing more family to politics and war"],
-            "magical_abilities": ["earth and plant manipulation", "enhanced physical abilities", "weapon enchantment", "tactical foresight", "nature communication"],
-            "relationships": {"Lyralei": 0.2, "Kael": 0.1, "Seraphina": 0.4}
+            "name": "Thane Ironforge",
+            "description": "A gruff but honorable General from the Titan Consortium, with rust-colored hair and cybernetic amber eyes that can analyze battlefield conditions in real-time. His body bears the scars of countless battles and the ports of military-grade augmentations. He's built like a fortress but moves with the fluid grace of someone trained in zero-gravity combat. His deep voice carries the authority of command, and he favors practical military gear in earth tones, adorned with the symbols of his house - crossed hammers and a stellar forge.",
+            "personality_traits": ["honorable", "straightforward", "protective", "sometimes hot-headed", "deeply loyal", "practical", "values military tradition", "engineering-minded"],
+            "background": "Thane serves as the Titan Consortium's military commander and diplomatic liaison. He comes from an ancient line of military engineers who have served the Consortium for generations. His family's territories border the dangerous Void Sectors, making him one of the few leaders who regularly deals with alien threats and understands their dangers. He lost his younger sister in the Void War and has dedicated his life to preventing such tragedies.",
+            "starting_location": "Titan Military Complex",
+            "goals": ["strengthen military alliances between factions", "honor his fallen sister's memory", "protect the border sectors", "train the next generation of void fighters"],
+            "fears": ["another galactic war", "failing to protect those under his command", "the Consortium being drawn into corporate conflicts", "losing more family to politics and war"],
+            "technological_abilities": ["gravitational field manipulation", "enhanced physical systems", "weapon system integration", "tactical battlefield analysis", "quantum communication arrays"],
+            "relationships": {"Zara": 0.2, "Kai": 0.1, "Sera": 0.4}
         }
     ]
 }
@@ -79,112 +79,115 @@ CUSTOM_CHARACTER_DATA = {
 CUSTOM_WORLD_DATA = {
     "locations": [
         {
-            "name": "Night Court Palace",
-            "description": "A magnificent palace carved from black stone that seems to absorb light, creating an otherworldly atmosphere. The walls are adorned with silver inlays that depict the history of the Night Court, and the floors are made of polished obsidian that reflects like dark mirrors. Massive windows offer breathtaking views of the mountain peaks and star-filled skies. The throne room features a ceiling enchanted to show the actual night sky, complete with moving constellations. Secret passages and hidden chambers are woven throughout the structure, accessible only to those who know the ancient passwords.",
-            "type": "royal_residence",
-            "magical_properties": ["enhanced privacy wards", "truth detection in certain rooms", "time dilation chambers", "scrying pools"],
-            "atmosphere": "mysterious and powerful",
-            "notable_features": ["the Star Chamber for important meetings", "the Library of Shadows containing forbidden knowledge", "training grounds with magical obstacles"]
+            "name": "Shadow Fleet Command",
+            "description": "A massive space station constructed from dark metamaterials that absorb sensor scans, creating an almost invisible presence in space. The walls are lined with quantum processors that display the real-time status of the entire Shadow Fleet, and the floors are made of polished void-glass that seems to contain swirling galaxies. Massive viewports offer breathtaking views of nebulae and distant star systems. The command center features a holographic ceiling that shows the actual positions of all fleet assets across the galaxy. Secret sections and classified chambers are woven throughout the structure, accessible only to those with the highest clearance codes.",
+            "type": "military_command_station",
+            "technological_properties": ["quantum stealth fields", "truth-detection algorithms in briefing rooms", "time-dilation training chambers", "long-range quantum communication arrays"],
+            "atmosphere": "mysterious and militarily powerful",
+            "notable_features": ["the Void Chamber for classified meetings", "the Archive of Shadows containing alien intelligence", "zero-gravity combat training facilities"]
         },
         {
-            "name": "Dawn Court Embassy",
-            "description": "An elegant building constructed from white marble that seems to glow with its own inner light. Golden veins run through the stone, and the architecture features soaring arches and delicate spires that reach toward the sky. Gardens surrounding the embassy bloom with flowers that never wilt, their petals shimmering with morning dew that never evaporates. The interior is filled with warm, natural light that banishes shadows and creates an atmosphere of openness and honesty. Fountains throughout the building play soft, melodic sounds that promote peace and clarity of thought.",
-            "type": "diplomatic_building",
-            "magical_properties": ["truth enhancement fields", "emotional calming effects", "protective light barriers", "communication crystals"],
+            "name": "Solar Federation Embassy",
+            "description": "An elegant orbital platform constructed from crystalline solar collectors that glow with captured starlight. Golden energy conduits run through the transparent walls, and the architecture features soaring energy arches and delicate spires that reach toward nearby stars. Hydroponic gardens surrounding the embassy bloom with genetically enhanced flowers that never wilt, their petals shimmering with bioluminescent patterns. The interior is filled with warm, natural light that banishes shadows and creates an atmosphere of openness and transparency. Harmonic resonators throughout the building generate soft, melodic frequencies that promote peace and mental clarity.",
+            "type": "diplomatic_station",
+            "technological_properties": ["truth-enhancement neural fields", "emotional stabilization systems", "defensive energy barriers", "quantum communication networks"],
             "atmosphere": "serene and inspiring",
-            "notable_features": ["the Hall of Accords for treaty negotiations", "meditation gardens", "the Sunrise Balcony for important announcements"]
+            "notable_features": ["the Hall of Galactic Accords for treaty negotiations", "zero-gravity meditation gardens", "the Solar Observatory for important announcements"]
         },
         {
-            "name": "Autumn Court Barracks",
-            "description": "A sturdy complex built from warm brown stone and rich wood, designed for both function and comfort. The buildings are surrounded by ancient oak trees whose leaves remain in perpetual autumn colors - deep reds, golden yellows, and burnt oranges. Training yards feature various obstacles and weapon racks, while the main hall boasts a massive fireplace where warriors gather to share stories and plan strategies. The architecture emphasizes strength and permanence, with thick walls and reinforced doors that could withstand a siege.",
-            "type": "military_facility",
-            "magical_properties": ["weapon enhancement forges", "tactical planning rooms with illusion magic", "healing springs", "protective earth wards"],
-            "atmosphere": "martial and traditional",
-            "notable_features": ["the Hall of Heroes honoring fallen warriors", "enchanted armory", "strategy rooms with magical maps"]
+            "name": "Titan Military Complex",
+            "description": "A massive fortress-station built from reinforced titanium-steel alloys and quantum-hardened ceramics, designed for both defense and industrial production. The complex is surrounded by automated defense platforms and manufacturing bays that glow with the light of stellar forges. Training areas feature various gravitational obstacles and weapon testing ranges, while the main hall houses a massive holographic fireplace where soldiers gather to share stories and plan campaigns. The architecture emphasizes strength and functionality, with thick armor plating and blast doors that could withstand a fleet bombardment.",
+            "type": "military_industrial_complex",
+            "technological_properties": ["weapon enhancement forges", "tactical planning rooms with battlefield simulation", "medical nano-bays", "defensive gravitational shields"],
+            "atmosphere": "martial and industrious",
+            "notable_features": ["the Memorial Hall honoring fallen soldiers", "quantum-enhanced armory", "strategy rooms with real-time galactic maps"]
         },
         {
-            "name": "The Crossroads",
-            "description": "A neutral meeting ground where representatives from all courts can gather safely. The area exists in a pocket dimension accessible through various portals, featuring a circular pavilion made of crystal that refracts light into rainbow patterns. The ground is covered in smooth stones from each court's territory, and the air itself seems to hum with protective magic that prevents violence and encourages honest discourse. Ancient trees from each court's lands grow here, their roots intertwined as a symbol of potential unity.",
-            "type": "neutral_ground",
-            "magical_properties": ["violence prevention wards", "truth compulsion fields", "universal translation magic", "temporal stability"],
+            "name": "The Nexus Station",
+            "description": "A neutral meeting ground where representatives from all galactic powers can gather safely. The station exists in a stable wormhole junction accessible through various hyperspace routes, featuring a circular chamber made of quantum crystal that refracts energy into spectacular light displays. The deck is covered in materials from each faction's home worlds, and the air itself hums with protective energy fields that prevent violence and encourage honest communication. Holographic trees from each faction's territories grow here, their light-roots intertwined as a symbol of potential unity.",
+            "type": "neutral_diplomatic_station",
+            "technological_properties": ["violence-suppression fields", "truth-verification algorithms", "universal translation matrices", "temporal stabilization generators"],
             "atmosphere": "neutral and diplomatic",
-            "notable_features": ["the Circle of Voices for formal negotiations", "memory pools that record important agreements", "the Harmony Grove for private conversations"]
+            "notable_features": ["the Circle of Voices for formal negotiations", "quantum memory banks that record agreements", "the Harmony Chamber for private conversations"]
         },
         {
-            "name": "The Shadow Veil",
-            "description": "A mysterious border region between the mortal world and the Fae realms, where reality becomes fluid and dangerous. The landscape shifts constantly, showing glimpses of different courts' territories or mortal lands depending on the observer's state of mind. Ancient ruins dot the area - remnants of civilizations that existed before the current court system. The air shimmers with unstable magic, and travelers report seeing visions of possible futures or forgotten pasts. This is where the barriers between worlds are thinnest.",
-            "type": "border_realm",
-            "magical_properties": ["reality distortion", "prophetic visions", "dimensional instability", "ancient magic remnants"],
+            "name": "The Void Sectors",
+            "description": "A mysterious border region between known space and the dark void beyond, where space-time becomes unstable and dangerous. The stellar geography shifts constantly, showing glimpses of different galactic regions or unknown dimensions depending on the observer's quantum state. Ancient alien ruins dot the area - remnants of civilizations that existed before current galactic powers. Space itself shimmers with unstable energy, and travelers report seeing visions of possible futures or forgotten pasts. This is where the barriers between dimensions are thinnest.",
+            "type": "border_void_region",
+            "technological_properties": ["space-time distortion", "prophetic quantum echoes", "dimensional instability", "ancient alien technology remnants"],
             "atmosphere": "dangerous and unpredictable",
-            "notable_features": ["the Oracle's Pool for seeking visions", "ruins of the First Palace", "the Whispering Stones that hold ancient memories"]
+            "notable_features": ["the Oracle Array for seeking quantum visions", "ruins of the First Empire", "the Resonance Crystals that hold ancient memories"]
         },
         {
-            "name": "Mortal Border Town",
-            "description": "A small human settlement that exists on the edge of Fae territory, where mortals who know about the Fae world live under special protections. The town features a mix of human architecture and subtle Fae influences - iron gates for protection, but also gardens that bloom with impossible beauty. The inhabitants are a mix of humans who have dealt with the Fae, those seeking refuge from the magical world, and a few half-Fae individuals trying to find their place between two worlds. The town serves as a crucial meeting point for diplomatic relations.",
-            "type": "border_settlement",
-            "magical_properties": ["protective iron barriers", "truth-seeing wells", "communication stones", "healing herbs"],
+            "name": "Frontier Colony Alpha-7",
+            "description": "A small human settlement that exists on the edge of known space, where colonists who know about the galactic powers live under special protections. The colony features a mix of standard human architecture and advanced alien-influenced technology - defensive barriers for protection, but also gardens that bloom with impossible alien beauty. The inhabitants are a mix of humans who have dealt with various galactic powers, refugees from corporate wars, and a few hybrid individuals trying to find their place between different worlds. The colony serves as a crucial meeting point for diplomatic relations.",
+            "type": "frontier_colony",
+            "technological_properties": ["defensive energy barriers", "truth-detection sensors", "quantum communication relays", "medical nano-gardens"],
             "atmosphere": "cautious but hopeful",
-            "notable_features": ["the Sanctuary Inn for travelers", "the Market of Two Worlds", "the Memorial Garden for those lost to Fae conflicts"]
+            "notable_features": ["the Sanctuary Hub for travelers", "the Galactic Trade Center", "the Memorial Plaza for those lost to corporate conflicts"]
         }
     ],
     "location_connections": [
-        {"from": "Night Court Palace", "to": "The Crossroads", "bidirectional": true, "travel_method": "winnowing portal"},
-        {"from": "Dawn Court Embassy", "to": "The Crossroads", "bidirectional": true, "travel_method": "light bridge"},
-        {"from": "Autumn Court Barracks", "to": "The Crossroads", "bidirectional": true, "travel_method": "earth path"},
-        {"from": "The Crossroads", "to": "The Shadow Veil", "bidirectional": true, "travel_method": "dimensional gateway"},
-        {"from": "The Shadow Veil", "to": "Mortal Border Town", "bidirectional": true, "travel_method": "reality bridge"},
-        {"from": "Night Court Palace", "to": "The Shadow Veil", "bidirectional": true, "travel_method": "shadow walk"},
-        {"from": "Dawn Court Embassy", "to": "Mortal Border Town", "bidirectional": true, "travel_method": "diplomatic route"},
-        {"from": "Autumn Court Barracks", "to": "Mortal Border Town", "bidirectional": true, "travel_method": "patrol path"}
+        {"from": "Shadow Fleet Command", "to": "The Nexus Station", "bidirectional": true, "travel_method": "quantum jump portal"},
+        {"from": "Solar Federation Embassy", "to": "The Nexus Station", "bidirectional": true, "travel_method": "solar wind highway"},
+        {"from": "Titan Military Complex", "to": "The Nexus Station", "bidirectional": true, "travel_method": "gravitational slingshot route"},
+        {"from": "The Nexus Station", "to": "The Void Sectors", "bidirectional": true, "travel_method": "dimensional gateway"},
+        {"from": "The Void Sectors", "to": "Frontier Colony Alpha-7", "bidirectional": true, "travel_method": "reality anchor bridge"},
+        {"from": "Shadow Fleet Command", "to": "The Void Sectors", "bidirectional": true, "travel_method": "stealth corridor"},
+        {"from": "Solar Federation Embassy", "to": "Frontier Colony Alpha-7", "bidirectional": true, "travel_method": "diplomatic hyperspace lane"},
+        {"from": "Titan Military Complex", "to": "Frontier Colony Alpha-7", "bidirectional": true, "travel_method": "patrol route"}
     ],
     "world_state": {
-        "current_season": "Late Autumn",
+        "current_galactic_cycle": "Post-Corporate War Era, Cycle 2387",
         "political_climate": "tense but stable",
-        "magical_conditions": "heightened due to approaching celestial alignment",
-        "recent_events": ["peace treaty negotiations between courts", "reports of shadow creatures near borders", "discovery of ancient artifacts"],
-        "ongoing_conflicts": ["territorial disputes", "trade disagreements", "differing views on mortal relations"],
-        "prophecies": ["The Starborn shall unite the courts when darkness rises", "Three courts shall stand as one against the shadow's return"]
+        "technological_conditions": "heightened due to approaching quantum convergence",
+        "recent_events": ["peace treaty negotiations between galactic powers", "reports of void entities near border sectors", "discovery of ancient alien artifacts"],
+        "ongoing_conflicts": ["territorial disputes over resource-rich systems", "trade disagreements over quantum technology", "differing views on AI rights and alien contact"],
+        "prophecies": ["The Void-touched shall unite the powers when darkness rises", "Three fleets shall stand as one against the ancient return"]
     }
 }
 
 CUSTOM_NARRATOR_DATA = {
-    "style": "epic_fantasy",
+    "style": "space_opera",
     "tone": "dramatic and immersive",
     "intervention_frequency": "high",
-    "preferred_themes": ["political intrigue", "romantic tension", "magical conflicts", "personal growth", "sacrifice and loyalty"],
+    "preferred_themes": ["political intrigue", "romantic tension", "technological conflicts", "personal growth", "sacrifice and loyalty", "alien mysteries"],
     "event_types": [
-        "magical_phenomena",
+        "quantum_phenomena",
         "political_revelations", 
         "romantic_moments",
         "combat_encounters",
         "prophecy_fulfillment",
-        "court_intrigue",
-        "power_manifestations"
+        "galactic_intrigue",
+        "technological_manifestations",
+        "alien_encounters"
     ],
     "narrative_focus": "character development through conflict and choice",
     "pacing": "builds tension gradually with explosive climactic moments",
-    "description_style": "rich sensory details with emphasis on magical elements"
+    "description_style": "rich sensory details with emphasis on technological and cosmic elements"
 }
 
 CUSTOM_OVERSEER_DATA = {
-    "documentation_style": "epic chronicle",
-    "chapter_structure": "follows character arcs and political developments",
-    "focus_areas": ["character relationships", "political maneuvering", "magical development", "world-building details"],
-    "narrative_voice": "omniscient chronicler with deep knowledge of Fae history",
+    "documentation_style": "galactic chronicle",
+    "chapter_structure": "follows character arcs and interstellar political developments",
+    "focus_areas": ["character relationships", "political maneuvering", "technological development", "world-building details", "alien mysteries"],
+    "narrative_voice": "omniscient chronicler with deep knowledge of galactic history",
     "story_elements_tracking": [
         "romantic relationships and tension",
         "political alliances and betrayals", 
-        "magical power growth and challenges",
+        "technological enhancement and challenges",
         "prophecy fulfillment progress",
-        "court dynamics and conflicts"
+        "galactic power dynamics and conflicts",
+        "alien artifact discoveries"
     ],
     "ending_criteria": {
         "character_development_threshold": 0.8,
         "relationship_complexity_minimum": 3,
         "political_resolution_required": true,
-        "magical_arc_completion": true
+        "technological_arc_completion": true,
+        "alien_mystery_resolution": true
     },
-    "story_quality_metrics": ["emotional depth", "political complexity", "magical consistency", "character growth", "world immersion"]
+    "story_quality_metrics": ["emotional depth", "political complexity", "technological consistency", "character growth", "world immersion", "cosmic scope"]
 }
 def setup_environment():
     """Set up the environment and check dependencies"""
