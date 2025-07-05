@@ -9,6 +9,47 @@ import sys
 # Add stories directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
+# Base simulation configuration (replaces config/simulation_config.json)
+CUSTOM_BASE_CONFIG = {
+    "simulation": {
+        "max_time_steps": 100,
+        "time_unit": "hour",
+        "auto_save_interval": 10,
+        "random_seed": None
+    },
+    "story": {
+        "theme": "space_opera_drama",
+        "genre": "space_opera",
+        "target_length": "long",
+        "ending_conditions": {
+            "max_interactions": 300,
+            "satisfaction_threshold": 0.8,
+            "stagnation_threshold": 0.3,
+            "min_story_length": 30
+        }
+    },
+    "memory": {
+        "max_memories_per_agent": 150,
+        "compression_threshold": 120,
+        "compression_ratio": 0.6,
+        "memory_types": [
+            "interaction",
+            "observation",
+            "thought",
+            "emotion",
+            "goal_update",
+            "technological_enhancement",
+            "political_development"
+        ]
+    },
+    "text_generation": {
+        "model": "gemini-flash",
+        "max_tokens": 200,
+        "temperature": 0.8,
+        "response_format": "natural"
+    }
+}
+
 # Sarah J. Maas inspired space opera configuration
 CUSTOM_CHARACTER_DATA = {
     "agents": [
@@ -134,6 +175,11 @@ CUSTOM_NARRATOR_DATA = {
     "style": "space_opera",
     "tone": "dramatic and immersive",
     "intervention_frequency": "high",
+    "intervention_threshold": {
+        "low": 0.2,
+        "medium": 0.5,
+        "high": 0.7
+    },
     "preferred_themes": ["political intrigue", "romantic tension", "technological conflicts", "personal growth", "sacrifice and loyalty", "alien mysteries"],
     "event_types": [
         "quantum_phenomena",
@@ -144,6 +190,14 @@ CUSTOM_NARRATOR_DATA = {
         "galactic_intrigue",
         "technological_manifestations",
         "alien_encounters"
+    ],
+    "preferred_story_elements": [
+        "character_development",
+        "galactic_politics",
+        "technological_advancement",
+        "alien_mysteries",
+        "romantic_relationships",
+        "moral_dilemmas"
     ],
     "narrative_focus": "character development through conflict and choice",
     "pacing": "builds tension gradually with explosive climactic moments",
@@ -183,6 +237,7 @@ def main():
         
         # Run the simulation with custom space opera data
         story_path = run_simulation(
+            base_config=CUSTOM_BASE_CONFIG,
             save_name="galactic_convergence_saga",
             verbose=True,
             character_data=CUSTOM_CHARACTER_DATA,

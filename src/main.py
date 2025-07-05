@@ -14,7 +14,7 @@ from typing import Optional
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from core.simulation_engine import SimulationEngine
-from utils.data_loaders import load_config, load_scenario, save_story
+from utils.data_loaders import save_story
 from utils.memory_management import MemoryManager
 
 def setup_environment():
@@ -30,16 +30,14 @@ def setup_environment():
     os.makedirs("data/saves", exist_ok=True)
     os.makedirs("data/exports", exist_ok=True)
 
-def run_simulation(config_path: str = None, scenario_name: str = None, 
-                  save_name: str = None, verbose: bool = True,
+def run_simulation(base_config: dict, save_name: str = None, verbose: bool = True,
                   character_data: dict = None, world_data: dict = None,
                   narrator_data: dict = None, overseer_data: dict = None) -> str:
     """
     Run a complete story simulation
     
     Args:
-        config_path: Path to configuration file (optional)
-        scenario_name: Name of scenario to load (optional)
+        base_config: Base configuration dictionary (required)
         save_name: Name for saving the story (optional)
         verbose: Whether to print progress information
         character_data: Dictionary containing character definitions (optional)
@@ -54,26 +52,11 @@ def run_simulation(config_path: str = None, scenario_name: str = None,
         print("🎭 Starting Generative Stories simulation...")
         print("=" * 50)
     
-    # Load configuration
-    if config_path:
-        config = load_config(config_path)
-    else:
-        config = load_config()
+    # Start with the base configuration
+    config = base_config.copy()
     
     if verbose:
-        print(f"📋 Configuration loaded: {config.get('story', {}).get('theme', 'general')}")
-    
-    # Load scenario if specified
-    if scenario_name:
-        scenario = load_scenario(scenario_name)
-        if scenario:
-            # Merge scenario into config
-            config.update(scenario)
-            if verbose:
-                print(f"📖 Scenario loaded: {scenario_name}")
-        else:
-            if verbose:
-                print(f"⚠️  Scenario '{scenario_name}' not found, using default config")
+        print(f"📋 Base configuration loaded: {config.get('story', {}).get('theme', 'general')}")
     
     # Apply custom data if provided
     if character_data:
@@ -167,75 +150,14 @@ def run_simulation(config_path: str = None, scenario_name: str = None,
             print(f"❌ Simulation failed: {e}")
         raise
 
-def interactive_mode():
-    """Run the simulation in interactive mode"""
-    print("🎭 Welcome to Generative Stories!")
-    print("=" * 40)
-    
-    # Get user preferences
-    print("\nAvailable scenarios:")
-    from utils.data_loaders import ScenarioLoader
-    scenarios = ScenarioLoader.list_available_scenarios()
-    
-    if scenarios:
-        for i, scenario in enumerate(scenarios, 1):
-            print(f"  {i}. {scenario}")
-        print(f"  {len(scenarios) + 1}. Use default configuration")
-        
-        try:
-            choice = input(f"\nSelect scenario (1-{len(scenarios) + 1}): ").strip()
-            choice_num = int(choice)
-            
-            if 1 <= choice_num <= len(scenarios):
-                scenario_name = scenarios[choice_num - 1]
-            else:
-                scenario_name = None
-        except (ValueError, IndexError):
-            scenario_name = None
-    else:
-        print("  No scenarios found, using default configuration")
-        scenario_name = None
-    
-    # Get save name
-    save_name = input("\nEnter a name for this story (optional): ").strip()
-    if not save_name:
-        save_name = None
-    
-    print("\n🎬 Starting simulation...")
-    
-    # Run the simulation
-    story_path = run_simulation(
-        scenario_name=scenario_name,
-        save_name=save_name,
-        verbose=True
-    )
-    
-    if story_path:
-        print(f"\n🎉 Story generation complete!")
-        print(f"📖 Your story is available at: {story_path}")
-        
-        # Ask if user wants to read the story
-        read_choice = input("\nWould you like to read the story now? (y/n): ").strip().lower()
-        if read_choice in ['y', 'yes']:
-            try:
-                with open(story_path, 'r', encoding='utf-8') as f:
-                    story_content = f.read()
-                print("\n" + "=" * 50)
-                print("YOUR GENERATED STORY")
-                print("=" * 50)
-                print(story_content)
-                print("=" * 50)
-            except Exception as e:
-                print(f"Error reading story file: {e}")
-
 def main():
-    """Main entry point - can be called from external scripts"""
+    """Main entry point - designed to be called from run_story.py"""
     # Set up environment
     setup_environment()
     
-    # This main function is designed to be called from run_story.py
-    # If run directly, it will use interactive mode
-    interactive_mode()
+    print("🎭 Generative Stories Main Module")
+    print("This module is designed to be called from run_story.py")
+    print("Please run the simulation using run_story.py instead.")
 
 if __name__ == "__main__":
     main()
