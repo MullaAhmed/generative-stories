@@ -233,7 +233,7 @@ def main():
     
     try:
         # Import the main function from stories
-        from main import run_simulation
+        from src.main import run_simulation
         
         # Run the simulation with custom space opera data
         story_path = run_simulation(

@@ -2,12 +2,12 @@
 
 import random
 from typing import Dict, List, Any, Optional
-from ..agents.story_agent import StoryAgent
-from ..agents.narrator_agent import NarratorAgent
-from ..agents.overseer_agent import OverseerAgent
-from ..environment.environment_manager import EnvironmentStateManager
-from ..utils.memory_management import MemoryManager, AgentMemoryInterface
-from ..utils.text_generation import analyze_sentiment
+from src.agents.story_agent import StoryAgent
+from src.agents.narrator_agent import NarratorAgent
+from src.agents.overseer_agent import OverseerAgent
+from src.environment.environment_manager import EnvironmentStateManager
+from src.utils.memory_management import MemoryManager, AgentMemoryInterface
+from src.utils.text_generation import analyze_sentiment
 
 class SimulationEngine:
     """

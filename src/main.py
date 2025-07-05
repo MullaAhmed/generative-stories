@@ -13,9 +13,9 @@ from typing import Optional
 # Add the stories directory to the Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from core.simulation_engine import SimulationEngine
-from utils.data_loaders import save_story
-from utils.memory_management import MemoryManager
+from src.core.simulation_engine import SimulationEngine
+from src.utils.data_loaders import save_story
+from src.utils.memory_management import MemoryManager
 
 def setup_environment():
     """Set up the environment and check dependencies"""

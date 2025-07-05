@@ -2,7 +2,7 @@
 
 import random
 from typing import Dict, List, Any
-from ..utils.text_generation import get_generator
+from src.utils.text_generation import get_generator
 
 class NarratorAgent:
     """

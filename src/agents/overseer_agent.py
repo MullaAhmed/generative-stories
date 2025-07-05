@@ -1,7 +1,7 @@
 # Overseer Agent - Story documentation and narrative coherence
 
 from typing import Dict, List, Any
-from ..utils.text_generation import get_generator
+from src.utils.text_generation import get_generator
 
 class OverseerAgent:
     """

@@ -2,8 +2,8 @@
 
 import random
 from typing import List, Dict, Optional
-from ..utils.text_generation import generate_dialogue, generate_action
-from ..utils.memory_management import AgentMemoryInterface
+from src.utils.text_generation import generate_dialogue, generate_action
+from src.utils.memory_management import AgentMemoryInterface
 
 class StoryAgent:
     """
