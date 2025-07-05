@@ -24,6 +24,11 @@ SAVE_NAME = None  # Auto-generate save name
 INTERACTIVE_MODE = True  # Run in interactive mode
 VERBOSE = True  # Show detailed output
 
+# Custom data dictionaries - modify these to customize your story
+CUSTOM_CHARACTER_DATA = None  # Set to dict with 'agents' key containing list of character dicts
+CUSTOM_WORLD_DATA = None      # Set to dict with 'locations', 'location_connections', etc.
+CUSTOM_NARRATOR_DATA = None   # Set to dict with narrator configuration
+CUSTOM_OVERSEER_DATA = None   # Set to dict with overseer configuration
 def setup_environment():
     """Set up the environment and check dependencies"""
     # Check for required environment variables
@@ -38,7 +43,9 @@ def setup_environment():
     os.makedirs("data/exports", exist_ok=True)
 
 def run_simulation(config_path: str = None, scenario_name: str = None, 
-                  save_name: str = None, verbose: bool = True) -> str:
+                  save_name: str = None, verbose: bool = True,
+                  character_data: dict = None, world_data: dict = None,
+                  narrator_data: dict = None, overseer_data: dict = None) -> str:
     """
     Run a complete story simulation
     
@@ -47,6 +54,10 @@ def run_simulation(config_path: str = None, scenario_name: str = None,
         scenario_name: Name of scenario to load (optional)
         save_name: Name for saving the story (optional)
         verbose: Whether to print progress information
+        character_data: Dictionary containing character definitions (optional)
+        world_data: Dictionary containing world/location definitions (optional)
+        narrator_data: Dictionary containing narrator configuration (optional)
+        overseer_data: Dictionary containing overseer configuration (optional)
         
     Returns:
         Path to the generated story file
@@ -75,6 +86,30 @@ def run_simulation(config_path: str = None, scenario_name: str = None,
         else:
             if verbose:
                 print(f"⚠️  Scenario '{scenario_name}' not found, using default config")
+    
+    # Apply custom data if provided
+    if character_data:
+        if verbose:
+            print(f"👥 Applying custom character data ({len(character_data.get('agents', []))} characters)")
+        config['agents'] = character_data.get('agents', [])
+    
+    if world_data:
+        if verbose:
+            print(f"🌍 Applying custom world data")
+        # Merge world data into config
+        for key in ['locations', 'location_connections', 'world_state', 'environment']:
+            if key in world_data:
+                config[key] = world_data[key]
+    
+    if narrator_data:
+        if verbose:
+            print(f"📝 Applying custom narrator configuration")
+        config['narrator'] = narrator_data
+    
+    if overseer_data:
+        if verbose:
+            print(f"👁️ Applying custom overseer configuration")
+        config['overseer'] = overseer_data
     
     # Initialize memory manager
     memory_config = config.get('memory', {})
@@ -220,7 +255,11 @@ def main():
             config_path=CONFIG_PATH,
             scenario_name=SCENARIO_NAME,
             save_name=SAVE_NAME,
-            verbose=verbose
+            verbose=verbose,
+            character_data=CUSTOM_CHARACTER_DATA,
+            world_data=CUSTOM_WORLD_DATA,
+            narrator_data=CUSTOM_NARRATOR_DATA,
+            overseer_data=CUSTOM_OVERSEER_DATA
         )
         
         if story_path and verbose:
