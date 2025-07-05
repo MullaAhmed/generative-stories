@@ -152,14 +152,14 @@ CUSTOM_WORLD_DATA = {
         }
     ],
     "location_connections": [
-        {"from": "Shadow Fleet Command", "to": "The Nexus Station", "bidirectional": true, "travel_method": "quantum jump portal"},
-        {"from": "Solar Federation Embassy", "to": "The Nexus Station", "bidirectional": true, "travel_method": "solar wind highway"},
-        {"from": "Titan Military Complex", "to": "The Nexus Station", "bidirectional": true, "travel_method": "gravitational slingshot route"},
-        {"from": "The Nexus Station", "to": "The Void Sectors", "bidirectional": true, "travel_method": "dimensional gateway"},
-        {"from": "The Void Sectors", "to": "Frontier Colony Alpha-7", "bidirectional": true, "travel_method": "reality anchor bridge"},
-        {"from": "Shadow Fleet Command", "to": "The Void Sectors", "bidirectional": true, "travel_method": "stealth corridor"},
-        {"from": "Solar Federation Embassy", "to": "Frontier Colony Alpha-7", "bidirectional": true, "travel_method": "diplomatic hyperspace lane"},
-        {"from": "Titan Military Complex", "to": "Frontier Colony Alpha-7", "bidirectional": true, "travel_method": "patrol route"}
+        {"from": "Shadow Fleet Command", "to": "The Nexus Station", "bidirectional": True, "travel_method": "quantum jump portal"},
+        {"from": "Solar Federation Embassy", "to": "The Nexus Station", "bidirectional": True, "travel_method": "solar wind highway"},
+        {"from": "Titan Military Complex", "to": "The Nexus Station", "bidirectional": True, "travel_method": "gravitational slingshot route"},
+        {"from": "The Nexus Station", "to": "The Void Sectors", "bidirectional": True, "travel_method": "dimensional gateway"},
+        {"from": "The Void Sectors", "to": "Frontier Colony Alpha-7", "bidirectional": True, "travel_method": "reality anchor bridge"},
+        {"from": "Shadow Fleet Command", "to": "The Void Sectors", "bidirectional": True, "travel_method": "stealth corridor"},
+        {"from": "Solar Federation Embassy", "to": "Frontier Colony Alpha-7", "bidirectional": True, "travel_method": "diplomatic hyperspace lane"},
+        {"from": "Titan Military Complex", "to": "Frontier Colony Alpha-7", "bidirectional": True, "travel_method": "patrol route"}
     ],
     "world_state": {
         "current_galactic_cycle": "Post-Corporate War Era, Cycle 2387",
