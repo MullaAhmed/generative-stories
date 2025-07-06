@@ -37,7 +37,7 @@ class TextGenerator:
             return bool(settings.GOOGLE_API_KEY)
         return False
     
-    def generate_response(self, prompt: str, max_tokens: int = 150, temperature: float = 0.7) -> str:
+    def generate_response(self, prompt: str, max_tokens: int = 150, temperature: float = 2) -> str:
         """
         Generate a response using the configured LLM provider
         """
@@ -123,7 +123,7 @@ Current mood: {current_mood}
 
 What do you do next? Describe your action in one simple sentence (under 20 words)."""
         
-        return self.generate_response(prompt, max_tokens=40, temperature=0.7)
+        return self.generate_response(prompt, max_tokens=40, temperature=2)
     
     def analyze_interaction_sentiment(self, interaction_text: str) -> Dict[str, float]:
         """Analyze the sentiment and emotional impact of an interaction"""

@@ -46,8 +46,8 @@ CUSTOM_BASE_CONFIG = {
     },
     "text_generation": {
         "model": "gemini-flash",
-        "max_tokens": 200,
-        "temperature": 0.8,
+        # "max_tokens": ,
+        "temperature": 1,
         "response_format": "natural"
     }
 }
@@ -180,7 +180,7 @@ CUSTOM_NARRATOR_DATA = {
     "intervention_threshold": {
         "low": 0.2,
         "medium": 0.5,
-        "high": 0.7
+        "high": 2
     },
     "preferred_themes": ["political intrigue", "romantic tension", "technological conflicts", "personal growth", "sacrifice and loyalty", "alien mysteries"],
     "event_types": [

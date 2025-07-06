@@ -74,7 +74,7 @@ class LLMClient:
         """Generate completion using OpenAI."""
         try:
             response_format = kwargs.get("response_format")
-            temperature = kwargs.get("temperature", 0.7)
+            temperature = kwargs.get("temperature", 2)
             model = kwargs.get("model", "gpt-4o")
             
             completion_kwargs = {
@@ -119,7 +119,7 @@ class LLMClient:
         """Generate completion using Groq."""
         try:
             response_format = kwargs.get("response_format")
-            temperature = kwargs.get("temperature", 0.7)
+            temperature = kwargs.get("temperature", 2)
             model = kwargs.get("model", "llama-3.3-70b-versatile")
             
             completion_kwargs = {
@@ -164,7 +164,7 @@ class LLMClient:
         """Generate completion using Gemini."""
         try:
             response_format = kwargs.get("response_format")
-            temperature = kwargs.get("temperature", 0.7)
+            temperature = kwargs.get("temperature", 2)
             model = kwargs.get("model", "gemini-2.0-flash")
             
             # Extract system instructions
