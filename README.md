@@ -40,6 +40,18 @@ Stories are saved in `stories/data/generated_stories/` as text files.
 
 ## Configuration
 
+### Memory System Setup
+
+The system requires mem0 for memory management:
+
+```bash
+pip install mem0
+```
+
+Configure mem0 by editing `config/mem0_config.json` to set up your preferred vector store and LLM provider for memory operations.
+
+### Story Configuration
+
 Edit `stories/config/simulation_config.json` to customize:
 - Characters and their personalities
 - Locations and connections
@@ -50,7 +62,7 @@ Edit `stories/config/simulation_config.json` to customize:
 
 - **Autonomous Agents**: Characters make their own decisions and interact naturally
 - **Dynamic Storytelling**: Stories emerge from character interactions
-- **Memory System**: Characters remember past interactions and experiences
+- **Advanced Memory System**: Characters remember past interactions and experiences using mem0
 - **Narrator Intervention**: AI narrator adds events to improve story flow
 - **Multiple Formats**: Export stories as text, JSON, or markdown
 - **Dynamic Character Generation**: System can introduce new characters to enhance story dynamics
