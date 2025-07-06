@@ -5,6 +5,7 @@ Simple runner script for Generative Stories with Space Opera Configuration
 
 import os
 import sys
+from src.utils.data_loaders import list_saved_simulations
 
 # Add stories directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
@@ -231,6 +232,31 @@ def main():
     print("🎭 Generative Stories Runner - Space Opera Edition")
     print("=" * 50)
     
+    # Check for saved simulations
+    saved_sims = list_saved_simulations()
+    load_from_save = None
+    
+    if saved_sims:
+        print(f"\n📂 Found {len(saved_sims)} saved simulations:")
+        for i, save_file in enumerate(saved_sims[:5], 1):  # Show up to 5 most recent
+            print(f"  {i}. {save_file}")
+        
+        choice = input("\nWould you like to (n)ew simulation or (l)oad saved? (n/l): ").strip().lower()
+        
+        if choice in ['l', 'load']:
+            try:
+                save_choice = input("Enter save number (1-5) or filename: ").strip()
+                if save_choice.isdigit():
+                    save_index = int(save_choice) - 1
+                    if 0 <= save_index < len(saved_sims):
+                        load_from_save = saved_sims[save_index]
+                    else:
+                        print("Invalid save number, starting new simulation.")
+                else:
+                    load_from_save = save_choice
+            except:
+                print("Invalid input, starting new simulation.")
+    
     try:
         # Import the main function from stories
         from src.main import run_simulation
@@ -243,7 +269,8 @@ def main():
             character_data=CUSTOM_CHARACTER_DATA,
             world_data=CUSTOM_WORLD_DATA,
             narrator_data=CUSTOM_NARRATOR_DATA,
-            overseer_data=CUSTOM_OVERSEER_DATA
+            overseer_data=CUSTOM_OVERSEER_DATA,
+            load_from_save=load_from_save
         )
         
         if story_path:

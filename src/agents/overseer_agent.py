@@ -243,3 +243,32 @@ class OverseerAgent:
             'major_events': len(self.story_metadata['major_events']),
             'story_length': len(self.chapter_summaries)
         }
+    
+    def to_dict(self) -> Dict:
+        """Serialize the overseer to a dictionary"""
+        return {
+            'story_log': self.story_log.copy(),
+            'character_arcs': self.character_arcs.copy(),
+            'narrative_threads': self.narrative_threads.copy(),
+            'chapters': self.chapters.copy(),
+            'story_metadata': self.story_metadata.copy(),
+            'interaction_history': self.interaction_history.copy(),
+            'event_history': self.event_history.copy(),
+            'chapter_summaries': self.chapter_summaries.copy()
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'OverseerAgent':
+        """Reconstruct an overseer from a dictionary"""
+        overseer = cls()
+        
+        overseer.story_log = data['story_log']
+        overseer.character_arcs = data['character_arcs']
+        overseer.narrative_threads = data['narrative_threads']
+        overseer.chapters = data['chapters']
+        overseer.story_metadata = data['story_metadata']
+        overseer.interaction_history = data['interaction_history']
+        overseer.event_history = data['event_history']
+        overseer.chapter_summaries = data['chapter_summaries']
+        
+        return overseer

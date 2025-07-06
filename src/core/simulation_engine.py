@@ -92,6 +92,12 @@ class SimulationEngine:
         
         print(f"\n⏰ Step {self.current_step}")
         
+        # Auto-save every 10 steps
+        if self.current_step % 10 == 0:
+            from src.utils.data_loaders import save_simulation_state
+            save_simulation_state(self, f"auto_save_step_{self.current_step}")
+            print(f"💾 Auto-saved at step {self.current_step}")
+        
         # 1. Process scheduled events
         scheduled_events = self.environment.process_scheduled_events()
         for event in scheduled_events:
@@ -408,3 +414,58 @@ class SimulationEngine:
             'story_health': self.narrator.get_story_health_summary(),
             'overseer_status': self.overseer.get_story_status()
         }
+    
+    def to_dict(self) -> Dict:
+        """Serialize the entire simulation to a dictionary"""
+        return {
+            'config': self.config,
+            'current_step': self.current_step,
+            'max_time_steps': self.max_time_steps,
+            'simulation_running': self.simulation_running,
+            'ending_metrics': self.ending_metrics.copy(),
+            'interactions_this_step': self.interactions_this_step.copy(),
+            'events_this_step': self.events_this_step.copy(),
+            'environment': self.environment.to_dict(),
+            'narrator': self.narrator.to_dict(),
+            'overseer': self.overseer.to_dict(),
+            'memory_manager': self.memory_manager.to_dict(),
+            'story_agents': [agent.to_dict() for agent in self.story_agents]
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'SimulationEngine':
+        """Reconstruct a simulation from a dictionary"""
+        from src.utils.memory_management import AgentMemoryInterface
+        
+        # Create new simulation with config
+        simulation = cls(data['config'])
+        
+        # Restore basic state
+        simulation.current_step = data['current_step']
+        simulation.max_time_steps = data['max_time_steps']
+        simulation.simulation_running = data['simulation_running']
+        simulation.ending_metrics = data['ending_metrics']
+        simulation.interactions_this_step = data['interactions_this_step']
+        simulation.events_this_step = data['events_this_step']
+        
+        # Restore components
+        simulation.environment = EnvironmentStateManager.from_dict(data['environment'])
+        simulation.narrator = NarratorAgent.from_dict(data['narrator'])
+        simulation.overseer = OverseerAgent.from_dict(data['overseer'])
+        simulation.memory_manager = MemoryManager.from_dict(data['memory_manager'])
+        
+        # Restore agents
+        simulation.story_agents = []
+        for agent_data in data['story_agents']:
+            agent = StoryAgent.from_dict(agent_data)
+            
+            # Set up memory interface
+            memory_interface = AgentMemoryInterface(agent.name, simulation.memory_manager)
+            agent.set_memory_interface(memory_interface)
+            
+            simulation.story_agents.append(agent)
+            
+            # Add agent back to environment
+            simulation.environment.move_agent(agent, None, agent.location)
+        
+        return simulation

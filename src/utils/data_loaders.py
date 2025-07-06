@@ -82,10 +82,51 @@ class StoryStateLoader:
             print(f"Error exporting story log: {e}")
             return False
 
+def load_simulation_state(filename: str) -> Optional[Dict[str, Any]]:
+    """Load a saved simulation state for resuming"""
+    try:
+        # Try different possible paths
+        possible_paths = [
+            f"data/saves/{filename}",
+            f"data/saves/{filename}.json",
+            filename  # In case full path is provided
+        ]
+        
+        load_path = None
+        for path in possible_paths:
+            if os.path.exists(path):
+                load_path = path
+                break
+        
+        if not load_path:
+            print(f"❌ Save file not found: {filename}")
+            return None
+        
+        with open(load_path, 'r', encoding='utf-8') as f:
+            simulation_data = json.load(f)
+        
+        print(f"📂 Simulation state loaded from: {load_path}")
+        return simulation_data
+        
+    except Exception as e:
+        print(f"❌ Error loading simulation state: {e}")
+        return None
 
+def list_saved_simulations() -> List[str]:
+    """List all available saved simulations"""
+    saves_dir = "data/saves"
+    if not os.path.exists(saves_dir):
+        return []
+    
+    save_files = []
+    for filename in os.listdir(saves_dir):
+        if filename.endswith('.json'):
+            save_files.append(filename)
+    
+    return sorted(save_files, reverse=True)  # Most recent first
 # Convenience functions for easy access
-def save_story(story_state: Dict[str, Any], filename: str = None) -> bool:
-    """Save current story state"""
+def save_generated_story_text(story_state: Dict[str, Any], filename: str = None) -> bool:
+    """Save generated story text (renamed from save_story)"""
     if filename:
         save_path = f"data/{filename}.json"
     else:
@@ -93,11 +134,44 @@ def save_story(story_state: Dict[str, Any], filename: str = None) -> bool:
     
     return StoryStateLoader.save_story_state(story_state, save_path)
 
-def load_story(filename: str = None) -> Optional[Dict[str, Any]]:
-    """Load a saved story state"""
+def load_generated_story_text(filename: str = None) -> Optional[Dict[str, Any]]:
+    """Load a saved story text (renamed from load_story)"""
     if filename:
         load_path = f"data/{filename}.json"
     else:
         load_path = "data/story_state.json"
     
     return StoryStateLoader.load_story_state(load_path)
+
+def save_simulation_state(simulation_engine, filename: str) -> bool:
+    """Save the complete simulation state for resuming"""
+    try:
+        # Create saves directory if it doesn't exist
+        os.makedirs("data/saves", exist_ok=True)
+        
+        # Add timestamp to filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        save_path = f"data/saves/{filename}_{timestamp}.json"
+        
+        # Serialize the simulation
+        simulation_data = simulation_engine.to_dict()
+        
+        # Add metadata
+        simulation_data['save_metadata'] = {
+            'save_time': datetime.now().isoformat(),
+            'version': '1.0',
+            'save_type': 'simulation_state',
+            'step': simulation_engine.current_step,
+            'agents': [agent.name for agent in simulation_engine.story_agents]
+        }
+        
+        # Save to file
+        with open(save_path, 'w', encoding='utf-8') as f:
+            json.dump(simulation_data, f, indent=2, ensure_ascii=False)
+        
+        print(f"💾 Simulation state saved to: {save_path}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error saving simulation state: {e}")
+        return False

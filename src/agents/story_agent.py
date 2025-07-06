@@ -244,3 +244,44 @@ class StoryAgent:
             'relationships': self.relationships.copy(),
             'goals': self.goals.copy()
         }
+    
+    def to_dict(self) -> Dict:
+        """Serialize the agent to a dictionary for saving"""
+        return {
+            'name': self.name,
+            'description': self.description,
+            'personality_traits': self.personality_traits.copy(),
+            'background': self.background,
+            'location': self.location,
+            'goals': self.goals.copy(),
+            'fears': self.fears.copy(),
+            'current_mood': self.current_mood,
+            'stress_level': self.stress_level,
+            'energy_level': self.energy_level,
+            'last_interaction_time': self.last_interaction_time,
+            'interaction_count': self.interaction_count,
+            'relationships': self.relationships.copy()
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'StoryAgent':
+        """Reconstruct an agent from a dictionary"""
+        agent = cls(
+            name=data['name'],
+            description=data['description'],
+            personality_traits=data['personality_traits'],
+            background=data['background'],
+            starting_location=data['location'],
+            goals=data['goals'],
+            fears=data['fears']
+        )
+        
+        # Restore state
+        agent.current_mood = data['current_mood']
+        agent.stress_level = data['stress_level']
+        agent.energy_level = data['energy_level']
+        agent.last_interaction_time = data['last_interaction_time']
+        agent.interaction_count = data['interaction_count']
+        agent.relationships = data['relationships']
+        
+        return agent

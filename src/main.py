@@ -32,7 +32,8 @@ def setup_environment():
 
 def run_simulation(base_config: dict, save_name: str = None, verbose: bool = True,
                   character_data: dict = None, world_data: dict = None,
-                  narrator_data: dict = None, overseer_data: dict = None) -> str:
+                  narrator_data: dict = None, overseer_data: dict = None,
+                  load_from_save: str = None) -> str:
     """
     Run a complete story simulation
     
@@ -44,6 +45,7 @@ def run_simulation(base_config: dict, save_name: str = None, verbose: bool = Tru
         world_data: Dictionary containing world/location definitions (optional)
         narrator_data: Dictionary containing narrator configuration (optional)
         overseer_data: Dictionary containing overseer configuration (optional)
+        load_from_save: Filename of saved simulation to resume (optional)
         
     Returns:
         Path to the generated story file
@@ -52,48 +54,72 @@ def run_simulation(base_config: dict, save_name: str = None, verbose: bool = Tru
         print("🎭 Starting Generative Stories simulation...")
         print("=" * 50)
     
-    # Start with the base configuration
-    config = base_config.copy()
-    
-    if verbose:
-        print(f"📋 Base configuration loaded: {config.get('story', {}).get('theme', 'general')}")
-    
-    # Apply custom data if provided
-    if character_data:
+    # Check if we're loading from a save
+    if load_from_save:
         if verbose:
-            print(f"👥 Applying custom character data ({len(character_data.get('agents', []))} characters)")
-        config['agents'] = character_data.get('agents', [])
+            print(f"📂 Loading simulation from save: {load_from_save}")
+        
+        saved_data = load_simulation_state(load_from_save)
+        if not saved_data:
+            print("❌ Failed to load saved simulation. Starting new simulation instead.")
+            load_from_save = None
+        else:
+            if verbose:
+                save_time = saved_data.get('save_metadata', {}).get('save_time', 'Unknown')
+                print(f"✅ Loaded simulation saved at: {save_time}")
     
-    if world_data:
+    if load_from_save and saved_data:
+        # Initialize simulation from saved state
+        simulation = SimulationEngine.from_dict(saved_data)
+        config = simulation.config
+        
         if verbose:
-            print(f"🌍 Applying custom world data")
-        # Merge world data into config
-        for key in ['locations', 'location_connections', 'world_state', 'environment']:
-            if key in world_data:
-                config[key] = world_data[key]
-    
-    if narrator_data:
+            print(f"🔄 Resuming simulation at step {simulation.current_step}")
+            print(f"👥 Restored {len(simulation.story_agents)} agents")
+            print(f"🌍 Restored {len(simulation.environment.locations)} locations")
+    else:
+        # Start with the base configuration for new simulation
+        config = base_config.copy()
+        
         if verbose:
-            print(f"📝 Applying custom narrator configuration")
-        config['narrator'] = narrator_data
-    
-    if overseer_data:
+            print(f"📋 Base configuration loaded: {config.get('story', {}).get('theme', 'general')}")
+        
+        # Apply custom data if provided
+        if character_data:
+            if verbose:
+                print(f"👥 Applying custom character data ({len(character_data.get('agents', []))} characters)")
+            config['agents'] = character_data.get('agents', [])
+        
+        if world_data:
+            if verbose:
+                print(f"🌍 Applying custom world data")
+            # Merge world data into config
+            for key in ['locations', 'location_connections', 'world_state', 'environment']:
+                if key in world_data:
+                    config[key] = world_data[key]
+        
+        if narrator_data:
+            if verbose:
+                print(f"📝 Applying custom narrator configuration")
+            config['narrator'] = narrator_data
+        
+        if overseer_data:
+            if verbose:
+                print(f"👁️ Applying custom overseer configuration")
+            config['overseer'] = overseer_data
+        
+        # Initialize memory manager
+        memory_config = config.get('memory', {})
+        memory_manager = MemoryManager(memory_config)
+        
+        # Initialize simulation engine
+        simulation = SimulationEngine(config)
+        
         if verbose:
-            print(f"👁️ Applying custom overseer configuration")
-        config['overseer'] = overseer_data
-    
-    # Initialize memory manager
-    memory_config = config.get('memory', {})
-    memory_manager = MemoryManager(memory_config)
-    
-    # Initialize simulation engine
-    simulation = SimulationEngine(config)
-    
-    if verbose:
-        print(f"🎬 Initializing simulation with {len(config.get('agents', []))} agents...")
-    
-    # Initialize the simulation
-    simulation.initialize_simulation(config)
+            print(f"🎬 Initializing simulation with {len(config.get('agents', []))} agents...")
+        
+        # Initialize the simulation
+        simulation.initialize_simulation(config)
     
     if verbose:
         print("🚀 Running simulation...")
@@ -121,6 +147,12 @@ def run_simulation(base_config: dict, save_name: str = None, verbose: bool = Tru
         with open(story_path, 'w', encoding='utf-8') as f:
             f.write(story_result)
         
+        # Save the simulation state for potential resuming
+        if save_name:
+            save_simulation_state(simulation, save_name)
+        else:
+            save_simulation_state(simulation, f"auto_save_{timestamp}")
+        
         # Also save the complete simulation state
         story_state = {
             'config': config,
@@ -133,7 +165,7 @@ def run_simulation(base_config: dict, save_name: str = None, verbose: bool = Tru
             }
         }
         
-        save_story(story_state, filename)
+        save_generated_story_text(story_state, filename)
         
         if verbose:
             print(f"💾 Story saved to: {story_path}")

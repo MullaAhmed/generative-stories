@@ -165,6 +165,29 @@ class MemoryManager:
             'oldest_memory': memories[-1]['timestamp'] if memories else None,
             'newest_memory': memories[0]['timestamp'] if memories else None
         }
+    
+    def to_dict(self) -> Dict:
+        """Serialize the memory manager to a dictionary"""
+        return {
+            'config': self.config,
+            'using_mem0': self.using_mem0,
+            'memory_store': self.memory_store.copy() if not self.using_mem0 else {},
+            'agent_memories': self.agent_memories.copy(),
+            'memory_counter': self.memory_counter
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'MemoryManager':
+        """Reconstruct a memory manager from a dictionary"""
+        memory_manager = cls(data['config'])
+        
+        # Restore state
+        if not data['using_mem0']:
+            memory_manager.memory_store = data['memory_store']
+        memory_manager.agent_memories = data['agent_memories']
+        memory_manager.memory_counter = data['memory_counter']
+        
+        return memory_manager
 
 
 class AgentMemoryInterface:

@@ -32,6 +32,36 @@ class Location:
     def get_agent_names(self) -> List[str]:
         """Get names of agents currently at this location"""
         return [agent.name for agent in self.current_agents]
+    
+    def to_dict(self) -> Dict:
+        """Serialize the location to a dictionary"""
+        return {
+            'name': self.name,
+            'description': self.description,
+            'location_type': self.location_type,
+            'connected_locations': self.connected_locations.copy(),
+            'objects': self.objects.copy(),
+            'atmosphere': self.atmosphere,
+            'events_history': self.events_history.copy(),
+            'agent_names': self.get_agent_names()  # Store agent names, not objects
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'Location':
+        """Reconstruct a location from a dictionary"""
+        location = cls(
+            name=data['name'],
+            description=data['description'],
+            location_type=data['location_type']
+        )
+        
+        location.connected_locations = data['connected_locations']
+        location.objects = data['objects']
+        location.atmosphere = data['atmosphere']
+        location.events_history = data['events_history']
+        # Note: agents will be added back by the environment manager
+        
+        return location
 
 
 class EnvironmentStateManager:
@@ -305,3 +335,45 @@ class EnvironmentStateManager:
                 'events': len(self.event_history)
             }
         }
+    
+    def to_dict(self) -> Dict:
+        """Serialize the environment to a dictionary"""
+        return {
+            'current_time': self.current_time,
+            'time_unit': self.time_unit,
+            'weather': self.weather,
+            'season': self.season,
+            'world_state': self.world_state.copy(),
+            'locations': {name: location.to_dict() for name, location in self.locations.items()},
+            'location_graph': self.location_graph.copy(),
+            'objects': self.objects.copy(),
+            'object_locations': self.object_locations.copy(),
+            'scheduled_events': self.scheduled_events.copy(),
+            'event_history': self.event_history.copy(),
+            'interaction_history': self.interaction_history.copy()
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'EnvironmentStateManager':
+        """Reconstruct an environment from a dictionary"""
+        env = cls()
+        
+        # Restore basic state
+        env.current_time = data['current_time']
+        env.time_unit = data['time_unit']
+        env.weather = data['weather']
+        env.season = data['season']
+        env.world_state = data['world_state']
+        env.location_graph = data['location_graph']
+        env.objects = data['objects']
+        env.object_locations = data['object_locations']
+        env.scheduled_events = data['scheduled_events']
+        env.event_history = data['event_history']
+        env.interaction_history = data['interaction_history']
+        
+        # Reconstruct locations
+        env.locations = {}
+        for name, location_data in data['locations'].items():
+            env.locations[name] = Location.from_dict(location_data)
+        
+        return env

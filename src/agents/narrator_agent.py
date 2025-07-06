@@ -275,3 +275,26 @@ class NarratorAgent:
             'steps_since_event': self.steps_since_last_event,
             'total_events': len(self.event_history)
         }
+    
+    def to_dict(self) -> Dict:
+        """Serialize the narrator to a dictionary"""
+        return {
+            'story_health_metrics': self.story_health_metrics.copy(),
+            'intervention_thresholds': self.intervention_thresholds.copy(),
+            'last_intervention_time': self.last_intervention_time,
+            'event_history': self.event_history.copy(),
+            'steps_since_last_event': self.steps_since_last_event
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict) -> 'NarratorAgent':
+        """Reconstruct a narrator from a dictionary"""
+        narrator = cls()
+        
+        narrator.story_health_metrics = data['story_health_metrics']
+        narrator.intervention_thresholds = data['intervention_thresholds']
+        narrator.last_intervention_time = data['last_intervention_time']
+        narrator.event_history = data['event_history']
+        narrator.steps_since_last_event = data['steps_since_last_event']
+        
+        return narrator
