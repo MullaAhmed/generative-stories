@@ -255,7 +255,10 @@ def main():
     if saved_sims:
         print(f"\n📂 Found {len(saved_sims)} saved simulations:")
         for i, save_file in enumerate(saved_sims[:5], 1):  # Show up to 5 most recent
-            print(f"  {i}. {save_file}")
+            if save_file.startswith("[LEGACY]"):
+                print(f"  {i}. {save_file} (old format)")
+            else:
+                print(f"  {i}. {save_file} (story directory)")
         
         choice = input("\nWould you like to (n)ew simulation or (l)oad saved? (n/l): ").strip().lower()
         
@@ -269,7 +272,11 @@ def main():
                     else:
                         print("Invalid save number, starting new simulation.")
                 else:
-                    load_from_save = save_choice
+                    # Handle both legacy and new format names
+                    if save_choice.startswith("[LEGACY]"):
+                        load_from_save = save_choice[9:]  # Remove "[LEGACY] " prefix
+                    else:
+                        load_from_save = save_choice
             except:
                 print("Invalid input, starting new simulation.")
     

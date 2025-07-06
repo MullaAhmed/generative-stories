@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from src.core.simulation_engine import SimulationEngine
 from src.utils.data_loaders import save_story
 from src.utils.memory_management import MemoryManager
+from src.utils.documentation_manager import DocumentationManager
 
 def setup_environment():
     """Set up the environment and check dependencies"""
@@ -90,6 +91,10 @@ def run_simulation(base_config: dict, save_name: str = None, verbose: bool = Tru
                 print(f"👥 Applying custom character data ({len(character_data.get('agents', []))} characters)")
             config['agents'] = character_data.get('agents', [])
         
+        # Set story title in config
+        if save_name:
+            config['story_title'] = save_name
+        
         if world_data:
             if verbose:
                 print(f"🌍 Applying custom world data")
@@ -141,42 +146,26 @@ def run_simulation(base_config: dict, save_name: str = None, verbose: bool = Tru
         # Save the story
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         if save_name:
-            filename = f"{save_name}_{timestamp}"
+            filename = save_name
         else:
             filename = f"story_{timestamp}"
         
-        story_path = f"data/generated_stories/{filename}.txt"
+        # Use the documentation manager's story directory
+        story_directory = simulation.documentation_manager.base_directory
+        story_path = story_directory / "narrative_output" / "final_story.txt"
         
         # Save story to file
-        os.makedirs(os.path.dirname(story_path), exist_ok=True)
+        story_path.parent.mkdir(parents=True, exist_ok=True)
         with open(story_path, 'w', encoding='utf-8') as f:
             f.write(story_result)
         
-        # Save the simulation state for potential resuming
-        if save_name:
-            save_simulation_state(simulation, save_name)
-        else:
-            save_simulation_state(simulation, f"auto_save_{timestamp}")
-        
-        # Also save the complete simulation state
-        story_state = {
-            'config': config,
-            'final_story': story_result,
-            'simulation_metadata': {
-                'completion_time': datetime.now().isoformat(),
-                'total_steps': simulation.current_step,
-                'agents': [agent.name for agent in simulation.story_agents],
-                'final_locations': {agent.name: agent.location for agent in simulation.story_agents}
-            }
-        }
-        
-        save_generated_story_text(story_state, filename)
+        # Final documentation save is already handled in simulation conclusion
         
         if verbose:
             print(f"💾 Story saved to: {story_path}")
-            print(f"📊 Simulation state saved to: data/{filename}.json")
+            print(f"📁 Complete documentation saved to: {story_directory}")
         
-        return story_path
+        return str(story_path)
         
     except KeyboardInterrupt:
         if verbose:

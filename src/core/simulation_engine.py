@@ -8,6 +8,7 @@ from src.agents.overseer_agent import OverseerAgent
 from src.environment.environment_manager import EnvironmentStateManager
 from src.utils.memory_management import MemoryManager, AgentMemoryInterface
 from src.utils.text_generation import analyze_sentiment, generate_new_character
+from src.utils.documentation_manager import DocumentationManager
 
 class SimulationEngine:
     """
@@ -20,6 +21,10 @@ class SimulationEngine:
         self.narrator = NarratorAgent()
         self.overseer = OverseerAgent()
         self.memory_manager = MemoryManager(config.get('memory', {}))
+        
+        # Initialize documentation manager
+        story_title = config.get('story_title', f"story_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+        self.documentation_manager = DocumentationManager(story_title)
         
         self.story_agents = []
         self.simulation_running = False
@@ -94,9 +99,14 @@ class SimulationEngine:
         
         # Auto-save every 10 steps
         if self.current_step % 10 == 0:
-            from src.utils.data_loaders import save_simulation_state
-            save_simulation_state(self, f"auto_save_step_{self.current_step}")
+            # Save using documentation manager
+            self.documentation_manager.save_simulation_state(self)
             print(f"💾 Auto-saved at step {self.current_step}")
+        
+        # Complete documentation save every 50 steps
+        if self.current_step % 50 == 0:
+            self.documentation_manager.save_complete_documentation(self)
+            print(f"📁 Complete documentation saved at step {self.current_step}")
         
         # 1. Process scheduled events
         scheduled_events = self.environment.process_scheduled_events()
@@ -469,6 +479,10 @@ class SimulationEngine:
         
         print("\n🎬 Concluding story...")
         
+        # Save final complete documentation
+        print("📁 Saving final documentation...")
+        self.documentation_manager.save_complete_documentation(self)
+        
         # Generate final chapter
         final_chapter = self.overseer.synthesize_chapter(self.current_step, max_interactions=20)
         print(f"📖 Final Chapter: {final_chapter}")
@@ -511,6 +525,10 @@ class SimulationEngine:
         
         print(f"\n✅ Simulation completed after {self.current_step} steps")
         print(f"📊 Final stats: {self.overseer.get_story_status()}")
+        
+        # Final documentation save
+        print("📁 Saving final complete documentation...")
+        self.documentation_manager.save_complete_documentation(self)
         
         return final_story
     

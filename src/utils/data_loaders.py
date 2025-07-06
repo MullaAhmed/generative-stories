@@ -4,6 +4,7 @@ import json
 import os
 from typing import Dict, List, Any, Optional
 from datetime import datetime
+from src.utils.documentation_manager import DocumentationManager
 
 class StoryStateLoader:
     """
@@ -86,45 +87,61 @@ class StoryStateLoader:
 def load_simulation_state(filename: str) -> Optional[Dict[str, Any]]:
     """Load a saved simulation state for resuming"""
     try:
-        # Try different possible paths
-        possible_paths = [
-            f"data/saves/{filename}",
-            f"data/saves/{filename}.json",
-            filename  # In case full path is provided
-        ]
+        # First try to load from new documentation system
+        simulation_data = DocumentationManager.load_simulation_from_directory(filename)
+        if simulation_data:
+            print(f"📂 Simulation state loaded from story directory: {filename}")
+            return simulation_data
         
-        load_path = None
-        for path in possible_paths:
-            if os.path.exists(path):
-                load_path = path
-                break
-        
-        if not load_path:
-            print(f"❌ Save file not found: {filename}")
+        # Fall back to old system
+        try:
+            # Try different possible paths
+            possible_paths = [
+                f"data/saves/{filename}",
+                f"data/saves/{filename}.json",
+                filename  # In case full path is provided
+            ]
+            
+            load_path = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    load_path = path
+                    break
+            
+            if not load_path:
+                print(f"❌ Save file not found: {filename}")
+                return None
+            
+            with open(load_path, 'r', encoding='utf-8') as f:
+                simulation_data = json.load(f)
+            
+            print(f"📂 Simulation state loaded from legacy save: {load_path}")
+            return simulation_data
+            
+        except Exception as e:
+            print(f"❌ Error loading from legacy saves: {e}")
             return None
-        
-        with open(load_path, 'r', encoding='utf-8') as f:
-            simulation_data = json.load(f)
-        
-        print(f"📂 Simulation state loaded from: {load_path}")
-        return simulation_data
         
     except Exception as e:
         print(f"❌ Error loading simulation state: {e}")
         return None
 
 def list_saved_simulations() -> List[str]:
-    """List all available saved simulations"""
+    """List all available saved simulations (both new and legacy)"""
+    saved_simulations = []
+    
+    # Get story directories from new system
+    story_dirs = DocumentationManager.list_story_directories()
+    saved_simulations.extend(story_dirs)
+    
+    # Get legacy saves
     saves_dir = "data/saves"
-    if not os.path.exists(saves_dir):
-        return []
+    if os.path.exists(saves_dir):
+        for filename in os.listdir(saves_dir):
+            if filename.endswith('.json'):
+                saved_simulations.append(f"[LEGACY] {filename}")
     
-    save_files = []
-    for filename in os.listdir(saves_dir):
-        if filename.endswith('.json'):
-            save_files.append(filename)
-    
-    return sorted(save_files, reverse=True)  # Most recent first
+    return sorted(saved_simulations, reverse=True)  # Most recent first
 # Convenience functions for easy access
 def save_generated_story_text(story_state: Dict[str, Any], filename: str = None) -> bool:
     """Save generated story text (renamed from save_story)"""
