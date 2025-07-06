@@ -114,23 +114,7 @@ def run_simulation(base_config: dict, save_name: str = None, verbose: bool = Tru
         
         # Initialize memory manager
         memory_config = config.get('memory', {})
-        try:
-            memory_manager = MemoryManager(memory_config)
-        except (ImportError, RuntimeError) as e:
-            print(f"❌ Memory system initialization failed: {e}")
-            print("💡 Suggestion: Check your mem0 configuration in config/mem0_config.json")
-            print("💡 Make sure you have the required API keys set up (OpenAI for embeddings)")
-            print("💡 You can also try running: pip install --upgrade mem0")
-            print("\n🔄 Attempting to continue with fallback memory system...")
-            
-            # Try to create a minimal memory manager
-            try:
-                memory_manager = MemoryManager(None)  # Use default config
-                print("✅ Fallback memory system initialized")
-            except Exception as e2:
-                print(f"❌ Fallback memory system also failed: {e2}")
-                print("The simulation cannot run without a working memory system.")
-                return None
+        memory_manager = MemoryManager(memory_config)
         
         # Initialize simulation engine
         simulation = SimulationEngine(config)
