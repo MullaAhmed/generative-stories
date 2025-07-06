@@ -87,7 +87,7 @@ def test_mem0_initialization():
         
         # Test basic functionality
         test_user_id = "test_user"
-        test_messages = [{"role": "user", "content": "This is a test memory for setup verification"}]
+        test_messages = [{"role": "user", "content": "I love singing and dancing."}]
         
         print("🔍 Testing memory add operation...")
         result = memory.add(
@@ -136,7 +136,7 @@ def test_memory_manager():
         print("🔍 Testing memory operations...")
         
         # Add a memory
-        memory_id = agent_memory.remember_thought("This is a test thought for verification")
+        memory_id = agent_memory.remember_thought("I love singing and dancing.")
         print(f"✅ Thought remembered: {memory_id}")
         
         # Get recent memories

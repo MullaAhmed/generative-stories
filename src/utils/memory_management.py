@@ -107,12 +107,18 @@ class MemoryManager:
         """Add a memory for a specific agent"""
         
         self.memory_counter += 1
-        memory_data = {
-            'type': memory_type,
-            'timestamp': datetime.now().isoformat(),
-            'metadata': metadata or {}
-        }
-        
+        if metadata:
+            memory_data = {
+                'type': memory_type,
+                'timestamp': datetime.now().isoformat(),
+                'metadata': metadata
+            }
+        else:
+            memory_data = {
+                'type': memory_type,
+                'timestamp': datetime.now().isoformat()
+             
+            }
         try:
             # Use mem0 to store the memory - wrap content in messages format
             messages = [{"role": "user", "content": memory_content}]
@@ -132,7 +138,7 @@ class MemoryManager:
         
         try:
             # Use mem0 to retrieve memories
-            memories = self.memory.get_all(user_id=agent_id)["results"]
+            memories = self.memory.get_all(user_id=agent_id).get("results",{})
             
             # Filter by type if specified
             if memory_type:
