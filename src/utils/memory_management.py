@@ -1,13 +1,9 @@
 # Memory Management - Integration with mem0 for agent memories
 
-import json
 from typing import Dict, List, Optional, Any
 from datetime import datetime
-
-try:
-    from mem0ai import Memory
-    MEM0_AVAILABLE = True
-except ImportError:
+from mem0 import MemoryClient
+MEM0_AVAILABLE = True
 
 class MemoryManager:
     """

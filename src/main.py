@@ -120,13 +120,7 @@ def run_simulation(base_config: dict, save_name: str = None, verbose: bool = Tru
                 print("✅ Memory system initialized successfully")
         except (ImportError, RuntimeError) as e:
             print(f"❌ Memory system initialization failed: {e}")
-            print("💡 Suggestion: Check your mem0 configuration in config/mem0_config.json")
-                print("💡 Suggestions to fix this:")
-                print("   1. Install mem0ai: pip install mem0ai")
-                print("   2. Set OPENAI_API_KEY in your .env file")
-                print("   3. Check config/mem0_config.json is properly configured")
-                print("   4. Ensure your OpenAI API key has sufficient credits")
-            
+                
             # Try to create a minimal memory manager
             try:
                 memory_manager = MemoryManager(None)  # Use default config
