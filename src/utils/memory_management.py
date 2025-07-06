@@ -107,25 +107,24 @@ class MemoryManager:
         """Add a memory for a specific agent"""
         
         self.memory_counter += 1
+        
+        # Create flat metadata dictionary - no nested 'metadata' key
+        memory_metadata = {
+            'type': memory_type,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        # Merge additional metadata if provided
         if metadata:
-            memory_data = {
-                'type': memory_type,
-                'timestamp': datetime.now().isoformat(),
-                'metadata': metadata
-            }
-        else:
-            memory_data = {
-                'type': memory_type,
-                'timestamp': datetime.now().isoformat()
-             
-            }
+            memory_metadata.update(metadata)
+        
         try:
             # Use mem0 to store the memory - wrap content in messages format
             messages = [{"role": "user", "content": memory_content}]
             result = self.memory.add(
                 messages=messages,
                 user_id=agent_id,
-                metadata=memory_data
+                metadata=memory_metadata
             )
             memory_id = result.get('id', f"{agent_id}_{self.memory_counter}")
             return memory_id
