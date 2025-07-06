@@ -16,7 +16,39 @@ class MemoryManager:
     """
     
     def __init__(self, config: Optional[Dict] = None):
-        self.config = config or {}
+        # Load mem0 config from file if no config provided
+        if config is None:
+            try:
+                import os
+                config_path = os.path.join(os.path.dirname(__file__), '..', '..', 'config', 'mem0_config.json')
+                if os.path.exists(config_path):
+                    with open(config_path, 'r') as f:
+                        import json
+                        self.config = json.load(f)
+                else:
+                    # Fallback to simple config
+                    self.config = {
+                        "vector_store": {
+                            "provider": "chroma",
+                            "config": {
+                                "collection_name": "generative_stories_memories",
+                                "path": "data/memories"
+                            }
+                        }
+                    }
+            except Exception as e:
+                print(f"Warning: Could not load mem0 config, using defaults: {e}")
+                self.config = {
+                    "vector_store": {
+                        "provider": "chroma",
+                        "config": {
+                            "collection_name": "generative_stories_memories",
+                            "path": "data/memories"
+                        }
+                    }
+                }
+        else:
+            self.config = config
         
         if not MEM0_AVAILABLE:
             raise ImportError(
@@ -26,10 +58,31 @@ class MemoryManager:
         
         try:
             # Initialize mem0 with configuration
-            self.memory = Memory(config=self.config)
+            # Create memory instance with proper config structure
+            if 'config' in self.config:
+                # If config is nested under 'config' key
+                self.memory = Memory(config=self.config['config'])
+            else:
+                # If config is at root level
+                self.memory = Memory(config=self.config)
             print("✅ Memory system initialized with mem0")
         except Exception as e:
-            raise RuntimeError(f"Failed to initialize mem0: {e}")
+            # Try with minimal config as fallback
+            try:
+                print(f"Warning: Primary mem0 config failed ({e}), trying minimal config...")
+                minimal_config = {
+                    "vector_store": {
+                        "provider": "chroma",
+                        "config": {
+                            "collection_name": "generative_stories_memories"
+                        }
+                    }
+                }
+                self.memory = Memory(config=minimal_config)
+                print("✅ Memory system initialized with minimal config")
+                self.config = minimal_config
+            except Exception as e2:
+                raise RuntimeError(f"Failed to initialize mem0 with both primary and minimal configs. Primary error: {e}, Minimal error: {e2}")
         
         self.memory_counter = 0
     
