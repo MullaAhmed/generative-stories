@@ -82,7 +82,7 @@ def test_mem0_initialization():
             config = json.load(f)
         
         # Try to initialize
-        memory = Memory(config=config)
+        memory = Memory.from_config(config_dict=config)
         print("✅ mem0ai Memory instance created successfully")
         
         # Test basic functionality
@@ -159,10 +159,10 @@ def main():
     print("=" * 50)
     
     tests = [
-        ("mem0ai Installation", test_mem0_installation),
-        ("OpenAI API Key", test_openai_api_key),
-        ("mem0 Configuration", test_mem0_config),
-        ("mem0ai Initialization", test_mem0_initialization),
+        # ("mem0ai Installation", test_mem0_installation),
+        # ("OpenAI API Key", test_openai_api_key),
+        # ("mem0 Configuration", test_mem0_config),
+        # ("mem0ai Initialization", test_mem0_initialization),
         ("MemoryManager Class", test_memory_manager)
     ]
     

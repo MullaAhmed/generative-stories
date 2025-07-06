@@ -70,7 +70,7 @@ class MemoryManager:
         
         try:
             # Initialize mem0 with configuration
-            self.memory = Memory(config=self.config)
+            self.memory = Memory.from_config(config_dict=self.config)
             print("✅ Memory system initialized with mem0ai")
             print(f"   Vector store: {self.config.get('vector_store', {}).get('provider', 'unknown')}")
             print(f"   LLM provider: {self.config.get('llm', {}).get('provider', 'openai (default)')}")
@@ -87,7 +87,7 @@ class MemoryManager:
                         }
                     }
                 }
-                self.memory = Memory(config=minimal_config)
+                self.memory = Memory.from_config(config_dict=minimal_config)
                 print("✅ Memory system initialized with minimal mem0ai config")
                 self.config = minimal_config
             except Exception as e2:
@@ -132,7 +132,7 @@ class MemoryManager:
         
         try:
             # Use mem0 to retrieve memories
-            memories = self.memory.get_all(user_id=agent_id)
+            memories = self.memory.get_all(user_id=agent_id)["results"]
             
             # Filter by type if specified
             if memory_type:
@@ -263,7 +263,9 @@ class AgentMemoryInterface:
     def get_recent_memories(self, limit: int = 10) -> List[Dict]:
         """Get the most recent memories"""
         try:
+           
             return self.memory_manager.get_memories(self.agent_id, limit=limit)
+        
         except Exception as e:
             raise RuntimeError(f"Failed to get recent memories for {self.agent_id}: {e}")
     
