@@ -100,20 +100,12 @@ class SimulationEngine:
         # Auto-save every 10 steps
         if self.current_step % 10 == 0:
             # Save using documentation manager
-            try:
-                self.documentation_manager.save_simulation_state(self)
-                # Also save memories
-                self.memory_manager.save_all_memories()
-            except Exception as e:
-                print(f"Warning: Auto-save failed: {e}")
+            self.documentation_manager.save_simulation_state(self)
             print(f"💾 Auto-saved at step {self.current_step}")
         
         # Complete documentation save every 50 steps
         if self.current_step % 50 == 0:
-            try:
-                self.documentation_manager.save_complete_documentation(self)
-            except Exception as e:
-                print(f"Warning: Complete documentation save failed: {e}")
+            self.documentation_manager.save_complete_documentation(self)
             print(f"📁 Complete documentation saved at step {self.current_step}")
         
         # 1. Process scheduled events

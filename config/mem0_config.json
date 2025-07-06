@@ -1,0 +1,24 @@
+{
+  "vector_store": {
+    "provider": "chroma",
+    "config": {
+      "collection_name": "generative_stories_memories",
+      "path": "data/memories"
+    }
+  },
+  "llm": {
+    "provider": "openai",
+    "config": {
+      "model": "gpt-4o-mini",
+      "temperature": 0.1,
+      "max_tokens": 1500
+    }
+  },
+  "embedder": {
+    "provider": "openai",
+    "config": {
+      "model": "text-embedding-3-small"
+    }
+  },
+  "version": "v1.1"
+}

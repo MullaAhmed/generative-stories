@@ -1,113 +1,89 @@
-# Memory Management - Simple fallback memory system without external dependencies
+# Memory Management - Integration with mem0 for agent memories
 
 import json
 from typing import Dict, List, Optional, Any
 from datetime import datetime
-import os
 
-class SimpleMemoryStore:
-    """
-    Simple in-memory storage for agent memories without external dependencies
-    """
-    
-    def __init__(self, storage_path: str = "data/memories"):
-        self.storage_path = storage_path
-        self.memories = {}  # agent_id -> list of memories
-        self.memory_counter = 0
-        
-        # Ensure storage directory exists
-        os.makedirs(storage_path, exist_ok=True)
-        
-        # Try to load existing memories
-        self.load_memories()
-    
-    def add_memory(self, agent_id: str, content: str, metadata: Dict = None) -> str:
-        """Add a memory for an agent"""
-        self.memory_counter += 1
-        memory_id = f"{agent_id}_{self.memory_counter}"
-        
-        memory = {
-            'id': memory_id,
-            'content': content,
-            'timestamp': datetime.now().isoformat(),
-            'metadata': metadata or {}
-        }
-        
-        if agent_id not in self.memories:
-            self.memories[agent_id] = []
-        
-        self.memories[agent_id].append(memory)
-        
-        # Keep only last 100 memories per agent to prevent memory bloat
-        if len(self.memories[agent_id]) > 100:
-            self.memories[agent_id] = self.memories[agent_id][-100:]
-        
-        return memory_id
-    
-    def get_memories(self, agent_id: str, limit: int = 10) -> List[Dict]:
-        """Get recent memories for an agent"""
-        if agent_id not in self.memories:
-            return []
-        
-        # Return most recent memories first
-        return self.memories[agent_id][-limit:][::-1]
-    
-    def search_memories(self, agent_id: str, query: str, limit: int = 5) -> List[Dict]:
-        """Simple text search in memories"""
-        if agent_id not in self.memories:
-            return []
-        
-        query_lower = query.lower()
-        matching_memories = []
-        
-        for memory in self.memories[agent_id]:
-            if query_lower in memory['content'].lower():
-                matching_memories.append(memory)
-        
-        # Return most recent matches first
-        return matching_memories[-limit:][::-1]
-    
-    def save_memories(self):
-        """Save memories to disk"""
-        try:
-            memory_file = os.path.join(self.storage_path, "agent_memories.json")
-            with open(memory_file, 'w', encoding='utf-8') as f:
-                json.dump({
-                    'memories': self.memories,
-                    'memory_counter': self.memory_counter
-                }, f, indent=2, ensure_ascii=False)
-        except Exception as e:
-            print(f"Warning: Could not save memories: {e}")
-    
-    def load_memories(self):
-        """Load memories from disk"""
-        try:
-            memory_file = os.path.join(self.storage_path, "agent_memories.json")
-            if os.path.exists(memory_file):
-                with open(memory_file, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    self.memories = data.get('memories', {})
-                    self.memory_counter = data.get('memory_counter', 0)
-        except Exception as e:
-            print(f"Warning: Could not load memories: {e}")
-            self.memories = {}
-            self.memory_counter = 0
+try:
+    from mem0 import Memory
+    MEM0_AVAILABLE = True
+except ImportError:
+    MEM0_AVAILABLE = False
 
 class MemoryManager:
     """
-    Handles memory management for story agents using simple fallback system
+    Handles memory management for story agents using mem0
     """
     
     def __init__(self, config: Optional[Dict] = None):
-        self.config = config or {}
+        # Load mem0 config from file if no config provided
+        if config is None:
+            try:
+                import os
+                config_path = os.path.join(os.path.dirname(__file__), '..', '..', 'config', 'mem0_config.json')
+                if os.path.exists(config_path):
+                    with open(config_path, 'r') as f:
+                        import json
+                        self.config = json.load(f)
+                else:
+                    # Fallback to simple config
+                    self.config = {
+                        "vector_store": {
+                            "provider": "chroma",
+                            "config": {
+                                "collection_name": "generative_stories_memories",
+                                "path": "data/memories"
+                            }
+                        }
+                    }
+            except Exception as e:
+                print(f"Warning: Could not load mem0 config, using defaults: {e}")
+                self.config = {
+                    "vector_store": {
+                        "provider": "chroma",
+                        "config": {
+                            "collection_name": "generative_stories_memories",
+                            "path": "data/memories"
+                        }
+                    }
+                }
+        else:
+            self.config = config
         
-        print("🧠 Using simple fallback memory system (mem0 not available)")
+        if not MEM0_AVAILABLE:
+            raise ImportError(
+                "mem0 library is required for memory management. "
+                "Please install it with: pip install mem0"
+            )
         
-        # Initialize simple memory store
-        storage_path = self.config.get('storage_path', 'data/memories')
-        self.memory_store = SimpleMemoryStore(storage_path)
+        try:
+            # Initialize mem0 with configuration
+            # Create memory instance with proper config structure
+            if 'config' in self.config:
+                # If config is nested under 'config' key
+                self.memory = Memory(config=self.config['config'])
+            else:
+                # If config is at root level
+                self.memory = Memory(config=self.config)
+            print("✅ Memory system initialized with mem0")
+        except Exception as e:
+            # Try with minimal config as fallback
+            try:
+                print(f"Warning: Primary mem0 config failed ({e}), trying minimal config...")
+                minimal_config = {
+                    "vector_store": {
+                        "provider": "chroma",
+                        "config": {
+                            "collection_name": "generative_stories_memories"
+                        }
+                    }
+                }
+                self.memory = Memory(config=minimal_config)
+                print("✅ Memory system initialized with minimal config")
+                self.config = minimal_config
+            except Exception as e2:
+                raise RuntimeError(f"Failed to initialize mem0 with both primary and minimal configs. Primary error: {e}, Minimal error: {e2}")
         
-        self.agent_memories = {}  # agent_id -> memory_data
         self.memory_counter = 0
     
     def add_memory(self, agent_id: str, memory_content: str, 
@@ -122,42 +98,47 @@ class MemoryManager:
             'metadata': metadata or {}
         }
         
-        # Use simple memory store
-        memory_id = self.memory_store.add_memory(agent_id, memory_content, memory_data)
-        
-        # Update local tracking
-        if agent_id not in self.agent_memories:
-            self.agent_memories[agent_id] = []
-        
-        self.agent_memories[agent_id].append({
-            'id': memory_id,
-            'content': memory_content,
-            'type': memory_type,
-            'timestamp': memory_data['timestamp'],
-            'metadata': metadata or {}
-        })
-        
-        # Keep only recent memories in local tracking
-        if len(self.agent_memories[agent_id]) > 50:
-            self.agent_memories[agent_id] = self.agent_memories[agent_id][-50:]
-        
-        return memory_id
+        try:
+            # Use mem0 to store the memory
+            result = self.memory.add(
+                messages=[{"role": "user", "content": memory_content}],
+                user_id=agent_id,
+                metadata=memory_data
+            )
+            memory_id = result.get('id', f"{agent_id}_{self.memory_counter}")
+            return memory_id
+        except Exception as e:
+            raise RuntimeError(f"Error adding memory to mem0: {e}")
     
     def get_memories(self, agent_id: str, memory_type: Optional[str] = None, 
                     limit: int = 10) -> List[Dict]:
         """Retrieve memories for a specific agent"""
         
-        memories = self.memory_store.get_memories(agent_id, limit * 2)  # Get more to filter
-        
-        # Filter by type if specified
-        if memory_type:
-            memories = [m for m in memories if m.get('metadata', {}).get('type') == memory_type]
-        
-        return memories[:limit]
+        try:
+            # Use mem0 to retrieve memories
+            memories = self.memory.get_all(user_id=agent_id)
+            
+            # Filter by type if specified
+            if memory_type:
+                memories = [m for m in memories if m.get('metadata', {}).get('type') == memory_type]
+            
+            return memories[:limit]
+        except Exception as e:
+            raise RuntimeError(f"Error retrieving memories from mem0: {e}")
     
     def search_memories(self, agent_id: str, query: str, limit: int = 5) -> List[Dict]:
-        """Search memories for a specific agent using simple text search"""
-        return self.memory_store.search_memories(agent_id, query, limit)
+        """Search memories for a specific agent using semantic search"""
+        
+        try:
+            # Use mem0's search functionality
+            results = self.memory.search(
+                query=query,
+                user_id=agent_id,
+                limit=limit
+            )
+            return results
+        except Exception as e:
+            raise RuntimeError(f"Error searching memories: {e}")
     
     def get_memory_summary(self, agent_id: str) -> Dict[str, Any]:
         """Get a summary of an agent's memory statistics"""
@@ -172,49 +153,24 @@ class MemoryManager:
             return {
                 'total_memories': len(memories),
                 'memory_types': memory_types,
-                'oldest_memory': memories[-1].get('timestamp') if memories else None,
-                'newest_memory': memories[0].get('timestamp') if memories else None
+                'oldest_memory': memories[-1].get('metadata', {}).get('timestamp') if memories else None,
+                'newest_memory': memories[0].get('metadata', {}).get('timestamp') if memories else None
             }
         except Exception as e:
-            print(f"Warning: Could not get memory summary for {agent_id}: {e}")
-            return {
-                'total_memories': 0,
-                'memory_types': {},
-                'oldest_memory': None,
-                'newest_memory': None
-            }
-    
-    def save_all_memories(self):
-        """Save all memories to disk"""
-        self.memory_store.save_memories()
+            raise RuntimeError(f"Could not get memory summary for {agent_id}: {e}")
     
     def to_dict(self) -> Dict:
         """Serialize the memory manager to a dictionary"""
         return {
             'config': self.config,
-            'agent_memories': self.agent_memories.copy(),
-            'memory_counter': self.memory_counter,
-            'memory_store_data': {
-                'memories': self.memory_store.memories.copy(),
-                'memory_counter': self.memory_store.memory_counter
-            }
+            'memory_counter': self.memory_counter
         }
     
     @classmethod
     def from_dict(cls, data: Dict) -> 'MemoryManager':
         """Reconstruct a memory manager from a dictionary"""
         memory_manager = cls(data['config'])
-        
-        # Restore state
-        memory_manager.agent_memories = data.get('agent_memories', {})
-        memory_manager.memory_counter = data.get('memory_counter', 0)
-        
-        # Restore memory store data
-        store_data = data.get('memory_store_data', {})
-        if store_data:
-            memory_manager.memory_store.memories = store_data.get('memories', {})
-            memory_manager.memory_store.memory_counter = store_data.get('memory_counter', 0)
-        
+        memory_manager.memory_counter = data['memory_counter']
         return memory_manager
 
 
@@ -232,8 +188,7 @@ class AgentMemoryInterface:
         metadata = {
             'other_agent': other_agent_name,
             'location': location,
-            'emotional_impact': emotional_impact,
-            'type': 'interaction'
+            'emotional_impact': emotional_impact
         }
         
         try:
@@ -244,16 +199,12 @@ class AgentMemoryInterface:
                 metadata
             )
         except Exception as e:
-            print(f"Warning: Could not store interaction memory for {self.agent_id}: {e}")
-            return f"failed_{self.agent_id}_{datetime.now().timestamp()}"
+            raise RuntimeError(f"Failed to remember interaction for {self.agent_id}: {e}")
     
     def remember_observation(self, observation: str, location: str) -> str:
         """Remember an observation about the environment"""
         memory_content = f"Observed at {location}: {observation}"
-        metadata = {
-            'location': location,
-            'type': 'observation'
-        }
+        metadata = {'location': location}
         
         try:
             return self.memory_manager.add_memory(
@@ -263,8 +214,7 @@ class AgentMemoryInterface:
                 metadata
             )
         except Exception as e:
-            print(f"Warning: Could not store observation memory for {self.agent_id}: {e}")
-            return f"failed_{self.agent_id}_{datetime.now().timestamp()}"
+            raise RuntimeError(f"Failed to remember observation for {self.agent_id}: {e}")
     
     def remember_thought(self, thought: str) -> str:
         """Remember an internal thought or reflection"""
@@ -272,12 +222,10 @@ class AgentMemoryInterface:
             return self.memory_manager.add_memory(
                 self.agent_id,
                 thought,
-                'thought',
-                {'type': 'thought'}
+                'thought'
             )
         except Exception as e:
-            print(f"Warning: Could not store thought memory for {self.agent_id}: {e}")
-            return f"failed_{self.agent_id}_{datetime.now().timestamp()}"
+            raise RuntimeError(f"Failed to remember thought for {self.agent_id}: {e}")
     
     def recall_about_agent(self, other_agent_name: str, limit: int = 5) -> List[Dict]:
         """Recall memories about a specific agent"""
@@ -285,8 +233,7 @@ class AgentMemoryInterface:
         try:
             return self.memory_manager.search_memories(self.agent_id, query, limit)
         except Exception as e:
-            print(f"Warning: Could not recall memories about {other_agent_name} for {self.agent_id}: {e}")
-            return []
+            raise RuntimeError(f"Failed to recall memories about {other_agent_name} for {self.agent_id}: {e}")
     
     def recall_about_location(self, location: str, limit: int = 5) -> List[Dict]:
         """Recall memories about a specific location"""
@@ -294,16 +241,14 @@ class AgentMemoryInterface:
         try:
             return self.memory_manager.search_memories(self.agent_id, query, limit)
         except Exception as e:
-            print(f"Warning: Could not recall memories about {location} for {self.agent_id}: {e}")
-            return []
+            raise RuntimeError(f"Failed to recall memories about {location} for {self.agent_id}: {e}")
     
     def get_recent_memories(self, limit: int = 10) -> List[Dict]:
         """Get the most recent memories"""
         try:
             return self.memory_manager.get_memories(self.agent_id, limit=limit)
         except Exception as e:
-            print(f"Warning: Could not get recent memories for {self.agent_id}: {e}")
-            return []
+            raise RuntimeError(f"Failed to get recent memories for {self.agent_id}: {e}")
     
     def get_emotional_memories(self, limit: int = 5) -> List[Dict]:
         """Get memories with high emotional impact"""
@@ -319,19 +264,11 @@ class AgentMemoryInterface:
             
             return emotional_memories[:limit]
         except Exception as e:
-            print(f"Warning: Could not get emotional memories for {self.agent_id}: {e}")
-            return []
+            raise RuntimeError(f"Failed to get emotional memories for {self.agent_id}: {e}")
     
     def get_memory_summary(self) -> Dict[str, Any]:
         """Get a summary of this agent's memories"""
         try:
             return self.memory_manager.get_memory_summary(self.agent_id)
         except Exception as e:
-            print(f"Warning: Could not get memory summary for {self.agent_id}: {e}")
-            return {
-                'total_memories': 0,
-                'memory_types': {},
-                'oldest_memory': None,
-                'newest_memory': None,
-                'error': str(e)
-            }
+            raise RuntimeError(f"Failed to get memory summary for {self.agent_id}: {e}")
