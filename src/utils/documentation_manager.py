@@ -510,8 +510,9 @@ class DocumentationManager:
                 json.dump(index_data, f, indent=2, ensure_ascii=False)
             
             # Also save as markdown for human readability
-            readme_md = self.base_directory / "README.md"
-            with open(readme_md, 'w', encoding='utf-8') as f:
+            # Save story documentation as STORY_INFO.md instead of README.md
+            story_info_md = self.base_directory / "STORY_INFO.md"
+            with open(story_info_md, 'w', encoding='utf-8') as f:
                 f.write(f"# {self.story_title}\n\n")
                 f.write(f"Generated on: {timestamp}\n\n")
                 f.write(f"## Story Statistics\n")
@@ -529,7 +530,7 @@ class DocumentationManager:
                 f.write(f"- Character Data: `{index_data['resumption_files']['character_data']}`\n")
                 f.write(f"- Environment: `{index_data['resumption_files']['environment_data']}`\n")
             
-            print(f"📋 Documentation index saved")
+            print(f"📋 Documentation index and story info saved")
             return True
             
         except Exception as e:

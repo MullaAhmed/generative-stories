@@ -39,7 +39,7 @@ The runner will start in interactive mode where you can:
 
 ## Generated Stories
 
-Stories are saved in `stories/data/generated_stories/` as text files.
+Stories are saved in organized directories under `data/stories/{story_name}/` with complete documentation and resumption data.
 
 ## Configuration
 
@@ -71,6 +71,26 @@ Edit `stories/config/simulation_config.json` to customize:
 - **Dynamic Character Generation**: System can introduce new characters to enhance story dynamics
 - **Multiple LLM Providers**: Support for Gemini, OpenAI, and Groq models
 - **Save/Resume**: Save story progress and resume from any point
+- **Structured Documentation**: Complete data organization for analysis and resumption
+
+## Story Documentation Structure
+
+Each generated story creates a comprehensive directory structure:
+
+```
+data/stories/{story_name}/
+├── STORY_INFO.md              # Story-specific documentation
+├── README.json                # Machine-readable index
+├── simulation_state/          # Core simulation state for resumption
+├── characters/                # Character data and development
+├── conversations/             # All interactions and dialogue
+├── locations/                 # Environment and world data
+├── events/                    # Story events and narrator interventions
+├── relationships/             # Character relationship matrices
+├── memory_data/               # Memory system data
+├── narrative_output/          # Generated story text and chapters
+└── raw_data/                  # Complete simulation dumps
+```
 
 ## Example Output
 
