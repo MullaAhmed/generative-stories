@@ -224,4 +224,4 @@ class LLMClient:
             
         except Exception as e:
             self.logger.error(f"Gemini API error: {str(e)}")
-            return {"error": str(e)}"
+            return {"error": str(e)}

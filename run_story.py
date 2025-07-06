@@ -45,7 +45,7 @@ CUSTOM_BASE_CONFIG = {
         ]
     },
     "text_generation": {
-        "model": "gemini-flash",
+        "model": "openai",
         # "max_tokens": ,
         "temperature": 1,
         "response_format": "natural"

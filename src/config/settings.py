@@ -17,7 +17,7 @@ class Settings:
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     
     # Default LLM Provider
-    DEFAULT_LLM_PROVIDER = os.getenv("DEFAULT_LLM_PROVIDER", "gemini")
+    DEFAULT_LLM_PROVIDER = os.getenv("DEFAULT_LLM_PROVIDER", "openai")
     
     # Logging
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
