@@ -7,7 +7,7 @@ from src.agents.narrator_agent import NarratorAgent
 from src.agents.overseer_agent import OverseerAgent
 from src.environment.environment_manager import EnvironmentStateManager
 from src.utils.memory_management import MemoryManager, AgentMemoryInterface
-from src.utils.text_generation import analyze_sentiment
+from src.utils.text_generation import analyze_sentiment, generate_new_character
 
 class SimulationEngine:
     """
@@ -119,6 +119,11 @@ class SimulationEngine:
         if intervention_level != "none":
             print(f"📝 Narrator intervention needed: {intervention_level}")
             self.process_narrator_intervention()
+        
+        # 5.5. Check if new character should be introduced
+        if self.narrator.should_introduce_new_character(self.story_agents, self.environment, self.current_step):
+            print("👤 Introducing new character to enhance story dynamics...")
+            self.introduce_new_character()
         
         # 6. Overseer documentation
         for interaction in self.interactions_this_step:
@@ -309,6 +314,88 @@ class SimulationEngine:
                     # Might change mood or stress
                     if 'storm' in event.get('description', '').lower():
                         agent.stress_level = min(1.0, agent.stress_level + 0.1)
+    
+    def introduce_new_character(self):
+        """Introduce a new character to the story"""
+        try:
+            # Gather context for character generation
+            existing_characters = []
+            for agent in self.story_agents:
+                existing_characters.append({
+                    'name': agent.name,
+                    'personality_traits': agent.personality_traits,
+                    'location': agent.location
+                })
+            
+            available_locations = list(self.environment.locations.keys())
+            story_theme = self.config.get('story', {}).get('theme', 'general')
+            
+            # Generate new character profile
+            character_data = generate_new_character(
+                existing_characters, 
+                story_theme, 
+                available_locations
+            )
+            
+            # Create new StoryAgent
+            new_agent = StoryAgent(
+                name=character_data['name'],
+                description=character_data['description'],
+                personality_traits=character_data.get('personality_traits', []),
+                background=character_data.get('background', ''),
+                starting_location=character_data.get('starting_location', available_locations[0]),
+                goals=character_data.get('goals', []),
+                fears=character_data.get('fears', [])
+            )
+            
+            # Set up memory interface
+            memory_interface = AgentMemoryInterface(new_agent.name, self.memory_manager)
+            new_agent.set_memory_interface(memory_interface)
+            
+            # Initialize relationships with existing characters
+            relationships = character_data.get('relationships', {})
+            for existing_agent in self.story_agents:
+                if existing_agent.name in relationships:
+                    new_agent.relationships[existing_agent.name] = relationships[existing_agent.name]
+                    existing_agent.relationships[new_agent.name] = relationships[existing_agent.name]
+                else:
+                    # Default neutral relationship
+                    new_agent.relationships[existing_agent.name] = 0.0
+                    existing_agent.relationships[new_agent.name] = 0.0
+            
+            # Add to simulation
+            self.story_agents.append(new_agent)
+            self.environment.move_agent(new_agent, None, new_agent.location)
+            
+            # Record the introduction
+            self.narrator.record_character_introduction(self.current_step)
+            
+            # Create an introduction event
+            introduction_event = {
+                'type': 'character_introduction',
+                'description': f"{new_agent.name} arrives at {new_agent.location}",
+                'affected_agents': [new_agent],
+                'location': new_agent.location,
+                'execution_time': self.current_step
+            }
+            
+            self.events_this_step.append(introduction_event)
+            
+            print(f"✨ New character introduced: {new_agent.name}")
+            print(f"📍 Location: {new_agent.location}")
+            print(f"🎭 Personality: {', '.join(new_agent.personality_traits[:3])}")
+            
+            # Add introduction memory for the new character
+            if new_agent.memory:
+                new_agent.memory.remember_observation(
+                    f"I have arrived at {new_agent.location} and am ready to begin my journey",
+                    new_agent.location
+                )
+            
+        except Exception as e:
+            print(f"❌ Error introducing new character: {e}")
+            import traceback
+            traceback.print_exc()
     
     def process_event(self, event: Dict):
         """Process a general event in the simulation"""

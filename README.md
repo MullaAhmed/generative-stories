@@ -12,8 +12,15 @@ A multi-agent narrative engine that creates dynamic stories through autonomous c
 2. **Set up your API key:**
    ```bash
    cp .env.example .env
-   # Edit .env and add your GEMINI_API_KEY
+   # Edit .env and add your API keys
    ```
+
+   **Supported LLM Providers:**
+   - **Gemini** (Google): Set `GOOGLE_API_KEY` or `GEMINI_API_KEY`
+   - **OpenAI**: Set `OPENAI_API_KEY`
+   - **Groq**: Set `GROQ_API_KEY`
+   
+   You can set `DEFAULT_LLM_PROVIDER` to choose your preferred provider (gemini, openai, or groq).
 
 3. **Run a story simulation:**
    ```bash
@@ -46,6 +53,9 @@ Edit `stories/config/simulation_config.json` to customize:
 - **Memory System**: Characters remember past interactions and experiences
 - **Narrator Intervention**: AI narrator adds events to improve story flow
 - **Multiple Formats**: Export stories as text, JSON, or markdown
+- **Dynamic Character Generation**: System can introduce new characters to enhance story dynamics
+- **Multiple LLM Providers**: Support for Gemini, OpenAI, and Groq models
+- **Save/Resume**: Save story progress and resume from any point
 
 ## Example Output
 

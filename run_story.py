@@ -6,6 +6,7 @@ Simple runner script for Generative Stories with Space Opera Configuration
 import os
 import sys
 from src.utils.data_loaders import list_saved_simulations
+from src.config.settings import settings
 
 # Add stories directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
@@ -231,6 +232,21 @@ CUSTOM_OVERSEER_DATA = {
 def main():
     print("🎭 Generative Stories Runner - Space Opera Edition")
     print("=" * 50)
+    
+    # Display available LLM providers
+    available_providers = []
+    if settings.OPENAI_API_KEY:
+        available_providers.append("openai")
+    if settings.GROQ_API_KEY:
+        available_providers.append("groq")
+    if settings.GOOGLE_API_KEY:
+        available_providers.append("gemini")
+    
+    if available_providers:
+        print(f"🤖 Available LLM providers: {', '.join(available_providers)}")
+        print(f"🎯 Default provider: {settings.DEFAULT_LLM_PROVIDER}")
+    else:
+        print("⚠️ No LLM providers configured. Using mock responses.")
     
     # Check for saved simulations
     saved_sims = list_saved_simulations()

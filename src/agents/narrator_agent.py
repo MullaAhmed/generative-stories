@@ -27,6 +27,8 @@ class NarratorAgent:
         self.last_intervention_time = None
         self.event_history = []
         self.steps_since_last_event = 0
+        self.last_character_introduction_step = None
+        self.character_introduction_cooldown = 15  # Steps between character introductions
         
     def analyze_story_state(self, agents: List, environment, time_step: int):
         """Analyze current story state and update health metrics"""
@@ -97,6 +99,45 @@ class NarratorAgent:
             stagnation_indicators += 1
         
         return stagnation_indicators >= 2
+    
+    def should_introduce_new_character(self, agents: List, environment, current_step: int) -> bool:
+        """Determine if a new character should be introduced to improve story dynamics"""
+        
+        # Check cooldown period
+        if (self.last_character_introduction_step and 
+            current_step - self.last_character_introduction_step < self.character_introduction_cooldown):
+            return False
+        
+        # Don't introduce too many characters
+        if len(agents) >= 6:  # Maximum of 6 characters
+            return False
+        
+        # Check if story would benefit from new character
+        introduction_score = 0
+        
+        # Low interaction density suggests need for fresh dynamics
+        if self.story_health_metrics['interaction_density'] < 0.3:
+            introduction_score += 1
+        
+        # High stagnation score suggests need for new element
+        if self.story_health_metrics['stagnation_score'] > 0.6:
+            introduction_score += 1
+        
+        # Low emotional variety suggests need for new perspectives
+        if self.story_health_metrics['emotional_variety'] < 0.4:
+            introduction_score += 1
+        
+        # All agents in same location for too long
+        locations = set(agent.location for agent in agents)
+        if len(locations) == 1 and self.steps_since_last_event > 5:
+            introduction_score += 1
+        
+        # Story has been running long enough to establish baseline
+        if current_step > 10:
+            introduction_score += 1
+        
+        # Introduce character if multiple criteria are met
+        return introduction_score >= 3
     
     def evaluate_intervention_need(self) -> str:
         """Determine if and what type of intervention is needed"""
@@ -267,6 +308,10 @@ class NarratorAgent:
         
         return executed_event
     
+    def record_character_introduction(self, current_step: int):
+        """Record that a character was introduced"""
+        self.last_character_introduction_step = current_step
+    
     def get_story_health_summary(self) -> Dict:
         """Get a summary of current story health metrics"""
         return {
@@ -283,7 +328,9 @@ class NarratorAgent:
             'intervention_thresholds': self.intervention_thresholds.copy(),
             'last_intervention_time': self.last_intervention_time,
             'event_history': self.event_history.copy(),
-            'steps_since_last_event': self.steps_since_last_event
+            'steps_since_last_event': self.steps_since_last_event,
+            'last_character_introduction_step': self.last_character_introduction_step,
+            'character_introduction_cooldown': self.character_introduction_cooldown
         }
     
     @classmethod
@@ -296,5 +343,7 @@ class NarratorAgent:
         narrator.last_intervention_time = data['last_intervention_time']
         narrator.event_history = data['event_history']
         narrator.steps_since_last_event = data['steps_since_last_event']
+        narrator.last_character_introduction_step = data.get('last_character_introduction_step')
+        narrator.character_introduction_cooldown = data.get('character_introduction_cooldown', 15)
         
         return narrator
