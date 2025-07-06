@@ -2,8 +2,13 @@
 
 from typing import Dict, List, Optional, Any
 from datetime import datetime
-from mem0 import MemoryClient
-MEM0_AVAILABLE = True
+
+try:
+    from mem0 import MemoryClient
+    MEM0_AVAILABLE = True
+except ImportError:
+    MEM0_AVAILABLE = False
+    MemoryClient = None
 
 class MemoryManager:
     """
@@ -63,8 +68,7 @@ class MemoryManager:
         
         try:
             # Initialize mem0 with configuration
-            # Create memory instance with proper config structure
-            self.memory = Memory(config=self.config)
+            self.memory = MemoryClient(config=self.config)
             print("✅ Memory system initialized with mem0ai")
             print(f"   Vector store: {self.config.get('vector_store', {}).get('provider', 'unknown')}")
             print(f"   LLM provider: {self.config.get('llm', {}).get('provider', 'unknown')}")
@@ -81,7 +85,7 @@ class MemoryManager:
                         }
                     }
                 }
-                self.memory = Memory(config=minimal_config)
+                self.memory = MemoryClient(config=minimal_config)
                 print("✅ Memory system initialized with minimal mem0ai config")
                 self.config = minimal_config
             except Exception as e2:

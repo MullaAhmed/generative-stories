@@ -14,11 +14,11 @@ def test_mem0_installation():
     """Test if mem0ai is properly installed"""
     print("🔍 Testing mem0ai installation...")
     try:
-        from mem0ai import Memory
-        print("✅ mem0ai is installed and importable")
+        from mem0 import MemoryClient
+        print("✅ mem0 is installed and importable")
         return True
     except ImportError as e:
-        print(f"❌ mem0ai import failed: {e}")
+        print(f"❌ mem0 import failed: {e}")
         print("💡 Install with: pip install mem0ai")
         return False
 
@@ -70,11 +70,11 @@ def test_mem0_config():
         return False
 
 def test_mem0_initialization():
-    """Test if mem0 can be initialized with the config"""
-    print("\n🔍 Testing mem0ai initialization...")
+    """Test if mem0 MemoryClient can be initialized with the config"""
+    print("\n🔍 Testing mem0 MemoryClient initialization...")
     
     try:
-        from mem0ai import Memory
+        from mem0 import MemoryClient
         import json
         
         # Load config
@@ -82,8 +82,8 @@ def test_mem0_initialization():
             config = json.load(f)
         
         # Try to initialize
-        memory = Memory(config=config)
-        print("✅ mem0ai Memory instance created successfully")
+        memory = MemoryClient(config=config)
+        print("✅ mem0 MemoryClient instance created successfully")
         
         # Test basic functionality
         test_user_id = "test_user"
@@ -107,7 +107,7 @@ def test_mem0_initialization():
         return True
         
     except Exception as e:
-        print(f"❌ mem0ai initialization failed: {e}")
+        print(f"❌ mem0 MemoryClient initialization failed: {e}")
         print("💡 Common issues:")
         print("   - Invalid OpenAI API key")
         print("   - Insufficient OpenAI credits")
