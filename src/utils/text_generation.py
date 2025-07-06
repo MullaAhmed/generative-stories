@@ -307,6 +307,120 @@ Write a flowing narrative paragraph (2-3 sentences) that captures what happened.
         return self.generate_response(prompt, max_tokens=200, temperature=0.6)
 
 
+    def synthesize_dynamic_chapter(self, chapter_data: Dict) -> str:
+        """Synthesize a chapter based on plot development and character arcs"""
+        
+        interactions = chapter_data.get('interactions', [])
+        events = chapter_data.get('events', [])
+        plot_points = chapter_data.get('plot_points', [])
+        emotional_beats = chapter_data.get('emotional_beats', [])
+        character_developments = chapter_data.get('character_developments', [])
+        relationship_changes = chapter_data.get('relationship_changes', [])
+        chapter_number = chapter_data.get('chapter_number', 1)
+        
+        # Create a comprehensive prompt for chapter synthesis
+        prompt = f"""Write a compelling chapter summary for Chapter {chapter_number} of a story.
+
+This chapter contains:
+- {len(interactions)} character interactions
+- {len(events)} significant events
+- {len(plot_points)} major plot developments
+- {len(emotional_beats)} emotional moments
+- {len(character_developments)} character growth moments
+- {len(relationship_changes)} relationship changes
+
+Key plot developments:
+{self._format_plot_points(plot_points)}
+
+Character developments:
+{self._format_character_developments(character_developments)}
+
+Emotional highlights:
+{self._format_emotional_beats(emotional_beats)}
+
+Relationship changes:
+{self._format_relationship_changes(relationship_changes)}
+
+Write a flowing narrative summary (3-5 sentences) that captures the essence of this chapter, focusing on the most significant developments and their impact on the story. Make it read like a chapter summary from a novel."""
+        
+        return self.generate_response(prompt, max_tokens=300, temperature=0.7)
+    
+    def _format_plot_points(self, plot_points: List[Dict]) -> str:
+        """Format plot points for the chapter synthesis prompt"""
+        if not plot_points:
+            return "- No major plot developments"
+        
+        formatted = []
+        for point in plot_points[:3]:  # Top 3 most significant
+            participants = point.get('participants', [])
+            description = point.get('description', 'Unknown event')
+            significance = point.get('significance', 0)
+            
+            if participants:
+                formatted.append(f"- {', '.join(participants)}: {description} (significance: {significance:.1f})")
+            else:
+                formatted.append(f"- {description} (significance: {significance:.1f})")
+        
+        return '\n'.join(formatted)
+    
+    def _format_character_developments(self, developments: List[Dict]) -> str:
+        """Format character developments for the chapter synthesis prompt"""
+        if not developments:
+            return "- No significant character developments"
+        
+        formatted = []
+        for dev in developments[:3]:  # Top 3 characters with most development
+            character = dev.get('character', 'Unknown')
+            moment_count = dev.get('development_count', 0)
+            moments = dev.get('moments', [])
+            
+            if moments:
+                latest_moment = moments[-1]
+                description = latest_moment.get('description', 'Character development')
+                formatted.append(f"- {character}: {description} ({moment_count} developments)")
+            else:
+                formatted.append(f"- {character}: Character growth ({moment_count} developments)")
+        
+        return '\n'.join(formatted)
+    
+    def _format_emotional_beats(self, emotional_beats: List[Dict]) -> str:
+        """Format emotional beats for the chapter synthesis prompt"""
+        if not emotional_beats:
+            return "- No significant emotional moments"
+        
+        # Sort by emotional intensity
+        sorted_beats = sorted(emotional_beats, key=lambda x: x.get('emotional_intensity', 0), reverse=True)
+        
+        formatted = []
+        for beat in sorted_beats[:3]:  # Top 3 most intense moments
+            participants = beat.get('participants', [])
+            intensity = beat.get('emotional_intensity', 0)
+            emotion_type = beat.get('type', 'emotional')
+            
+            if participants:
+                formatted.append(f"- {', '.join(participants)}: {emotion_type} moment (intensity: {intensity:.1f})")
+            else:
+                formatted.append(f"- {emotion_type} moment (intensity: {intensity:.1f})")
+        
+        return '\n'.join(formatted)
+    
+    def _format_relationship_changes(self, relationship_changes: List[Dict]) -> str:
+        """Format relationship changes for the chapter synthesis prompt"""
+        if not relationship_changes:
+            return "- No significant relationship changes"
+        
+        formatted = []
+        for change in relationship_changes[:3]:  # Top 3 relationship changes
+            characters = change.get('characters', [])
+            change_count = change.get('change_count', 0)
+            
+            if len(characters) >= 2:
+                formatted.append(f"- {characters[0]} and {characters[1]}: relationship development ({change_count} moments)")
+            else:
+                formatted.append(f"- Relationship development ({change_count} moments)")
+        
+        return '\n'.join(formatted)
+
 # Global instance for easy access
 _generator = None
 

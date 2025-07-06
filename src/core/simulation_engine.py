@@ -128,14 +128,30 @@ class SimulationEngine:
         # 6. Overseer documentation
         for interaction in self.interactions_this_step:
             self.overseer.observe_interaction(interaction)
+            
+            # Track character development for each participant
+            for participant_name in interaction.get('participants', []):
+                participant_agent = next((agent for agent in self.story_agents if agent.name == participant_name), None)
+                if participant_agent:
+                    self.overseer.track_character_development(participant_agent, interaction)
         
         for event in self.events_this_step:
             self.overseer.observe_event(event)
         
-        # 7. Generate chapter if enough content
-        if self.current_step % 5 == 0:  # Every 5 steps
+        # 7. Check for dynamic chapter generation
+        chapter_decision = self.overseer.should_end_current_chapter(self.current_step)
+        
+        if chapter_decision['should_end']:
             chapter = self.overseer.synthesize_chapter(self.current_step)
             print(f"📖 {chapter}")
+            print(f"   📊 Chapter ended due to: {', '.join(chapter_decision['reasons'])}")
+            print(f"   📈 Chapter significance: {chapter_decision.get('ending_score', 0):.2f}")
+        
+        # Force chapter generation every 500 steps as backup
+        elif self.current_step % 500 == 0:
+            chapter = self.overseer.synthesize_chapter(self.current_step, force_end=True)
+            print(f"📖 {chapter}")
+            print(f"   ⏰ Chapter ended due to step limit (500 steps)")
         
         # 8. Check for story ending conditions
         if self.check_ending_conditions():
