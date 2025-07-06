@@ -254,7 +254,10 @@ class SimulationEngine:
                     
                     # Log action as memory
                     if agent.memory:
-                        agent.memory.remember_thought(f"I decided to: {action}")
+                        try:
+                            agent.memory.remember_thought(f"I decided to: {action}")
+                        except Exception as e:
+                            print(f"Warning: Could not store thought for {agent.name}: {e}")
     
     def update_agent_states(self):
         """Update emotional states and other agent properties"""
@@ -300,10 +303,13 @@ class SimulationEngine:
                 
                 # Log event in agent memory
                 if agent.memory:
-                    agent.memory.remember_observation(
-                        event.get('detailed_description', event.get('description', 'Something happened')),
-                        agent.location
-                    )
+                    try:
+                        agent.memory.remember_observation(
+                            event.get('detailed_description', event.get('description', 'Something happened')),
+                            agent.location
+                        )
+                    except Exception as e:
+                        print(f"Warning: Could not store event memory for {agent.name}: {e}")
                 
                 # Apply specific event effects
                 if event_type == 'relationship_catalyst':
@@ -387,10 +393,13 @@ class SimulationEngine:
             
             # Add introduction memory for the new character
             if new_agent.memory:
-                new_agent.memory.remember_observation(
-                    f"I have arrived at {new_agent.location} and am ready to begin my journey",
-                    new_agent.location
-                )
+                try:
+                    new_agent.memory.remember_observation(
+                        f"I have arrived at {new_agent.location} and am ready to begin my journey",
+                        new_agent.location
+                    )
+                except Exception as e:
+                    print(f"Warning: Could not store introduction memory for {new_agent.name}: {e}")
             
         except Exception as e:
             print(f"❌ Error introducing new character: {e}")

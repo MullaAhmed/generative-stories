@@ -110,7 +110,12 @@ def run_simulation(base_config: dict, save_name: str = None, verbose: bool = Tru
         
         # Initialize memory manager
         memory_config = config.get('memory', {})
-        memory_manager = MemoryManager(memory_config)
+        try:
+            memory_manager = MemoryManager(memory_config)
+        except (ImportError, RuntimeError) as e:
+            print(f"❌ Memory system initialization failed: {e}")
+            print("The simulation cannot run without a working memory system.")
+            return None
         
         # Initialize simulation engine
         simulation = SimulationEngine(config)

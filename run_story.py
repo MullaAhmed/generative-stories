@@ -310,7 +310,7 @@ def main():
     except ImportError as e:
         print(f"❌ Import error: {e}")
         print("Make sure all required dependencies are installed:")
-        print("pip install google-generativeai python-dotenv")
+        print("pip install google-generativeai python-dotenv mem0")
         
     except Exception as e:
         print(f"❌ Error running simulation: {e}")

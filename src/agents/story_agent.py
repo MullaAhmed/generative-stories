@@ -109,8 +109,12 @@ class StoryAgent:
         # Get recent memories for context
         recent_memories = []
         if self.memory:
-            memories = self.memory.get_recent_memories(limit=3)
-            recent_memories = [mem.get('content', '') for mem in memories]
+            try:
+                memories = self.memory.get_recent_memories(limit=3)
+                recent_memories = [mem.get('content', '') for mem in memories]
+            except Exception as e:
+                print(f"Warning: Could not retrieve memories for {self.name}: {e}")
+                recent_memories = []
         
         # Generate dialogue
         situation = f"You are at {self.location} and want to talk to {target_agent.name}"
@@ -152,8 +156,12 @@ class StoryAgent:
         # Get recent memories for context
         recent_memories = []
         if self.memory:
-            memories = self.memory.recall_about_agent(initiator_name, limit=2)
-            recent_memories = [mem.get('content', '') for mem in memories]
+            try:
+                memories = self.memory.recall_about_agent(initiator_name, limit=2)
+                recent_memories = [mem.get('content', '') for mem in memories]
+            except Exception as e:
+                print(f"Warning: Could not retrieve memories about {initiator_name} for {self.name}: {e}")
+                recent_memories = []
         
         # Generate response
         situation = f"{initiator_name} just said: '{original_content}'. You are responding."

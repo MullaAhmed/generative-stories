@@ -22,7 +22,10 @@ A multi-agent narrative engine that creates dynamic stories through autonomous c
    
    You can set `DEFAULT_LLM_PROVIDER` to choose your preferred provider (gemini, openai, or groq).
 
-3. **Run a story simulation:**
+3. **Configure memory system:**
+   The system requires mem0 for memory management. Ensure the configuration in `config/mem0_config.json` is properly set up for your environment.
+
+4. **Run a story simulation:**
    ```bash
    python run_story.py
    ```
@@ -42,13 +45,13 @@ Stories are saved in `stories/data/generated_stories/` as text files.
 
 ### Memory System Setup
 
-The system requires mem0 for memory management:
+The system **requires** mem0 for memory management:
 
 ```bash
 pip install mem0
 ```
 
-Configure mem0 by editing `config/mem0_config.json` to set up your preferred vector store and LLM provider for memory operations.
+**Important:** Configure mem0 by editing `config/mem0_config.json` to set up your preferred vector store and LLM provider for memory operations. The simulation will not run without a properly configured memory system.
 
 ### Story Configuration
 
