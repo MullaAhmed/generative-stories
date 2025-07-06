@@ -5,10 +5,9 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 try:
-    from mem0 import Memory
+    from mem0ai import Memory
     MEM0_AVAILABLE = True
 except ImportError:
-    MEM0_AVAILABLE = False
 
 class MemoryManager:
     """
@@ -25,6 +24,7 @@ class MemoryManager:
                     with open(config_path, 'r') as f:
                         import json
                         self.config = json.load(f)
+                        print(f"✅ Loaded mem0 config from: {config_path}")
                 else:
                     # Fallback to simple config
                     self.config = {
@@ -36,6 +36,7 @@ class MemoryManager:
                             }
                         }
                     }
+                    print("⚠️ Using fallback mem0 config (config file not found)")
             except Exception as e:
                 print(f"Warning: Could not load mem0 config, using defaults: {e}")
                 self.config = {
@@ -53,19 +54,25 @@ class MemoryManager:
         if not MEM0_AVAILABLE:
             raise ImportError(
                 "mem0 library is required for memory management. "
-                "Please install it with: pip install mem0"
+                "Please install it with: pip install mem0ai"
             )
+        
+        # Validate OpenAI API key for mem0
+        import os
+        openai_key = os.getenv("OPENAI_API_KEY")
+        if not openai_key:
+            print("⚠️ WARNING: OPENAI_API_KEY not found in environment variables")
+            print("   mem0ai requires OpenAI API key for embeddings and LLM operations")
+            print("   Please set OPENAI_API_KEY in your .env file")
         
         try:
             # Initialize mem0 with configuration
             # Create memory instance with proper config structure
-            if 'config' in self.config:
-                # If config is nested under 'config' key
-                self.memory = Memory(config=self.config['config'])
-            else:
-                # If config is at root level
-                self.memory = Memory(config=self.config)
-            print("✅ Memory system initialized with mem0")
+            self.memory = Memory(config=self.config)
+            print("✅ Memory system initialized with mem0ai")
+            print(f"   Vector store: {self.config.get('vector_store', {}).get('provider', 'unknown')}")
+            print(f"   LLM provider: {self.config.get('llm', {}).get('provider', 'unknown')}")
+            print(f"   Embedder: {self.config.get('embedder', {}).get('provider', 'unknown')}")
         except Exception as e:
             # Try with minimal config as fallback
             try:
@@ -79,10 +86,17 @@ class MemoryManager:
                     }
                 }
                 self.memory = Memory(config=minimal_config)
-                print("✅ Memory system initialized with minimal config")
+                print("✅ Memory system initialized with minimal mem0ai config")
                 self.config = minimal_config
             except Exception as e2:
-                raise RuntimeError(f"Failed to initialize mem0 with both primary and minimal configs. Primary error: {e}, Minimal error: {e2}")
+                print(f"❌ Failed to initialize mem0ai with both primary and minimal configs.")
+                print(f"   Primary error: {e}")
+                print(f"   Minimal error: {e2}")
+                print(f"   Please check:")
+                print(f"   1. OPENAI_API_KEY is set in your .env file")
+                print(f"   2. mem0ai is installed: pip install mem0ai")
+                print(f"   3. Your OpenAI API key has sufficient credits")
+                raise RuntimeError(f"mem0ai initialization failed. See details above.")
         
         self.memory_counter = 0
     
