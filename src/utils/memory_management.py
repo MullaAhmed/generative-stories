@@ -2,14 +2,13 @@
 
 from typing import Dict, List, Optional, Any
 from datetime import datetime
-from src.config.settings import settings
 
 try:
-    from mem0 import MemoryClient
+    from mem0 import Memory
     MEM0_AVAILABLE = True
 except ImportError:
     MEM0_AVAILABLE = False
-    MemoryClient = None
+    Memory = None
 
 class MemoryManager:
     """
@@ -17,8 +16,41 @@ class MemoryManager:
     """
     
     def __init__(self, config: Optional[Dict] = None):
-        # Store config for reference (though MemoryClient doesn't use it directly)
-        self.config = config or {}
+        # Load mem0 config from file if no config provided
+        if config is None:
+            try:
+                import os
+                config_path = os.path.join(os.path.dirname(__file__), '..', '..', 'config', 'mem0_config.json')
+                if os.path.exists(config_path):
+                    with open(config_path, 'r') as f:
+                        import json
+                        self.config = json.load(f)
+                        print(f"✅ Loaded mem0 config from: {config_path}")
+                else:
+                    # Fallback to simple config
+                    self.config = {
+                        "vector_store": {
+                            "provider": "chroma",
+                            "config": {
+                                "collection_name": "generative_stories_memories",
+                                "path": "data/memories"
+                            }
+                        }
+                    }
+                    print("⚠️ Using fallback mem0 config (config file not found)")
+            except Exception as e:
+                print(f"Warning: Could not load mem0 config, using defaults: {e}")
+                self.config = {
+                    "vector_store": {
+                        "provider": "chroma",
+                        "config": {
+                            "collection_name": "generative_stories_memories",
+                            "path": "data/memories"
+                        }
+                    }
+                }
+        else:
+            self.config = config
         
         if not MEM0_AVAILABLE:
             raise ImportError(
@@ -26,27 +58,47 @@ class MemoryManager:
                 "Please install it with: pip install mem0ai"
             )
         
-        # Check for MEM0_API_KEY
-        if not settings.MEM0_API_KEY:
+        # Validate OpenAI API key for mem0
+        import os
+        openai_key = os.getenv("OPENAI_API_KEY")
+        if not openai_key:
             raise RuntimeError(
-                "MEM0_API_KEY is required for mem0 MemoryClient. "
-                "Please set MEM0_API_KEY in your .env file. "
-                "Get your API key from https://app.mem0.ai/"
+                "OPENAI_API_KEY is required for mem0 Memory class. "
+                "Please set OPENAI_API_KEY in your .env file. "
+                "mem0ai requires OpenAI API key for embeddings and LLM operations."
             )
         
         try:
-            # Initialize MemoryClient with API key
-            self.memory = MemoryClient(api_key=settings.MEM0_API_KEY)
-            print("✅ Memory system initialized with mem0 MemoryClient")
-            print(f"   Using managed mem0 service")
+            # Initialize mem0 with configuration
+            self.memory = Memory(config=self.config)
+            print("✅ Memory system initialized with mem0ai")
+            print(f"   Vector store: {self.config.get('vector_store', {}).get('provider', 'unknown')}")
+            print(f"   LLM provider: {self.config.get('llm', {}).get('provider', 'openai (default)')}")
+            print(f"   Embedder: {self.config.get('embedder', {}).get('provider', 'openai (default)')}")
         except Exception as e:
-            print(f"❌ Failed to initialize mem0 MemoryClient: {e}")
-            print(f"   Please check:")
-            print(f"   1. MEM0_API_KEY is set correctly in your .env file")
-            print(f"   2. mem0ai is installed: pip install mem0ai")
-            print(f"   3. Your mem0 API key is valid")
-            print(f"   4. You have internet connectivity")
-            raise RuntimeError(f"mem0 MemoryClient initialization failed: {e}")
+            # Try with minimal config as fallback
+            try:
+                print(f"Warning: Primary mem0 config failed ({e}), trying minimal config...")
+                minimal_config = {
+                    "vector_store": {
+                        "provider": "chroma",
+                        "config": {
+                            "collection_name": "generative_stories_memories"
+                        }
+                    }
+                }
+                self.memory = Memory(config=minimal_config)
+                print("✅ Memory system initialized with minimal mem0ai config")
+                self.config = minimal_config
+            except Exception as e2:
+                print(f"❌ Failed to initialize mem0ai with both primary and minimal configs.")
+                print(f"   Primary error: {e}")
+                print(f"   Minimal error: {e2}")
+                print(f"   Please check:")
+                print(f"   1. OPENAI_API_KEY is set in your .env file")
+                print(f"   2. mem0ai is installed: pip install mem0ai")
+                print(f"   3. Your OpenAI API key has sufficient credits")
+                raise RuntimeError(f"mem0ai initialization failed. See details above.")
         
         self.memory_counter = 0
     
@@ -56,24 +108,20 @@ class MemoryManager:
         
         self.memory_counter += 1
         memory_data = {
-            'content': memory_content,
             'type': memory_type,
             'timestamp': datetime.now().isoformat(),
             'metadata': metadata or {}
         }
         
         try:
-            # Use mem0 to store the memory
+            # Use mem0 to store the memory - wrap content in messages format
+            messages = [{"role": "user", "content": memory_content}]
             result = self.memory.add(
-                memory_content,
+                messages=messages,
                 user_id=agent_id,
                 metadata=memory_data
             )
-            # Handle different response formats from mem0
-            if isinstance(result, dict):
-                memory_id = result.get('id', f"{agent_id}_{self.memory_counter}")
-            else:
-                memory_id = f"{agent_id}_{self.memory_counter}"
+            memory_id = result.get('id', f"{agent_id}_{self.memory_counter}")
             return memory_id
         except Exception as e:
             raise RuntimeError(f"Error adding memory to mem0: {e}")
@@ -84,19 +132,14 @@ class MemoryManager:
         
         try:
             # Use mem0 to retrieve memories
-            memories = self.memory.get_all(user_id=agent_id, limit=limit)
+            memories = self.memory.get_all(user_id=agent_id)
             
             # Filter by type if specified
             if memory_type:
-                filtered_memories = []
-                for m in memories:
-                    if isinstance(m, dict):
-                        metadata = m.get('metadata', {})
-                        if isinstance(metadata, dict) and metadata.get('type') == memory_type:
-                            filtered_memories.append(m)
-                memories = filtered_memories
+                memories = [m for m in memories if m.get('metadata', {}).get('type') == memory_type]
             
-            return memories
+            # Apply limit by slicing
+            return memories[:limit]
         except Exception as e:
             raise RuntimeError(f"Error retrieving memories from mem0: {e}")
     
@@ -105,7 +148,11 @@ class MemoryManager:
         
         try:
             # Use mem0's search functionality
-            results = self.memory.search(query, user_id=agent_id, limit=limit)
+            results = self.memory.search(
+                query=query,
+                user_id=agent_id,
+                limit=limit
+            )
             return results
         except Exception as e:
             raise RuntimeError(f"Error searching memories: {e}")
@@ -113,20 +160,18 @@ class MemoryManager:
     def get_memory_summary(self, agent_id: str) -> Dict[str, Any]:
         """Get a summary of an agent's memory statistics"""
         try:
-            memories = self.get_memories(agent_id, limit=100)  # Get recent memories
+            memories = self.get_memories(agent_id, limit=1000)  # Get all memories
             
             memory_types = {}
             for memory in memories:
-                if isinstance(memory, dict):
-                    metadata = memory.get('metadata', {})
-                    if isinstance(metadata, dict):
-                        mem_type = metadata.get('type', 'unknown')
-                        memory_types[mem_type] = memory_types.get(mem_type, 0) + 1
+                mem_type = memory.get('metadata', {}).get('type', 'unknown')
+                memory_types[mem_type] = memory_types.get(mem_type, 0) + 1
             
             return {
                 'total_memories': len(memories),
                 'memory_types': memory_types,
-                'sample_size': min(len(memories), 100)
+                'oldest_memory': memories[-1].get('metadata', {}).get('timestamp') if memories else None,
+                'newest_memory': memories[0].get('metadata', {}).get('timestamp') if memories else None
             }
         except Exception as e:
             raise RuntimeError(f"Could not get memory summary for {agent_id}: {e}")
@@ -135,15 +180,14 @@ class MemoryManager:
         """Serialize the memory manager to a dictionary"""
         return {
             'config': self.config,
-            'memory_counter': self.memory_counter,
-            'api_key_configured': bool(settings.MEM0_API_KEY)
+            'memory_counter': self.memory_counter
         }
     
     @classmethod
     def from_dict(cls, data: Dict) -> 'MemoryManager':
         """Reconstruct a memory manager from a dictionary"""
         memory_manager = cls(data['config'])
-        memory_manager.memory_counter = data.get('memory_counter', 0)
+        memory_manager.memory_counter = data['memory_counter']
         return memory_manager
 
 

@@ -12,73 +12,107 @@ load_dotenv()
 
 def test_mem0_installation():
     """Test if mem0ai is properly installed"""
-    print("🔍 Testing mem0 installation...")
+    print("🔍 Testing mem0ai installation...")
     try:
-        from mem0 import MemoryClient
-        print("✅ mem0 is installed and importable")
+        from mem0 import Memory
+        print("✅ mem0ai is installed and importable")
         return True
     except ImportError as e:
-        print(f"❌ mem0 import failed: {e}")
+        print(f"❌ mem0ai import failed: {e}")
         print("💡 Install with: pip install mem0ai")
         return False
 
-def test_mem0_api_key():
-    """Test if MEM0 API key is available"""
-    print("\n🔍 Testing MEM0 API key...")
-    mem0_key = os.getenv("MEM0_API_KEY")
-    if mem0_key:
-        print("✅ MEM0_API_KEY found in environment")
-        print(f"   Key starts with: {mem0_key[:10]}...")
+def test_openai_api_key():
+    """Test if OpenAI API key is available"""
+    print("\n🔍 Testing OpenAI API key...")
+    openai_key = os.getenv("OPENAI_API_KEY")
+    if openai_key:
+        print("✅ OPENAI_API_KEY found in environment")
+        print(f"   Key starts with: {openai_key[:10]}...")
         return True
     else:
-        print("❌ MEM0_API_KEY not found in environment")
-        print("💡 Set MEM0_API_KEY in your .env file")
-        print("💡 Get your API key from https://app.mem0.ai/")
+        print("❌ OPENAI_API_KEY not found in environment")
+        print("💡 Set OPENAI_API_KEY in your .env file")
+        return False
+
+def test_mem0_config():
+    """Test if mem0 config file exists and is valid"""
+    print("\n🔍 Testing mem0 configuration...")
+    config_path = "config/mem0_config.json"
+    
+    if not os.path.exists(config_path):
+        print(f"❌ Config file not found: {config_path}")
+        return False
+    
+    try:
+        import json
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        
+        print(f"✅ Config file loaded: {config_path}")
+        
+        # Check required sections
+        required_sections = ['vector_store', 'llm', 'embedder']
+        for section in required_sections:
+            if section in config:
+                print(f"   ✅ {section}: {config[section].get('provider', 'unknown')}")
+            else:
+                print(f"   ❌ Missing section: {section}")
+                return False
+        
+        return True
+        
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON in config file: {e}")
+        return False
+    except Exception as e:
+        print(f"❌ Error reading config file: {e}")
         return False
 
 def test_mem0_initialization():
-    """Test if mem0 MemoryClient can be initialized with the config"""
-    print("\n🔍 Testing mem0 MemoryClient initialization...")
+    """Test if mem0 can be initialized with the config"""
+    print("\n🔍 Testing mem0ai initialization...")
     
     try:
-        from mem0 import MemoryClient
+        from mem0 import Memory
+        import json
         
-        # Get API key
-        api_key = os.getenv("MEM0_API_KEY")
-        if not api_key:
-            print("❌ MEM0_API_KEY not found, cannot test initialization")
-            return False
+        # Load config
+        with open("config/mem0_config.json", 'r') as f:
+            config = json.load(f)
         
         # Try to initialize
-        memory = MemoryClient(api_key=api_key)
-        print("✅ mem0 MemoryClient instance created successfully")
+        memory = Memory(config=config)
+        print("✅ mem0ai Memory instance created successfully")
         
         # Test basic functionality
         test_user_id = "test_user"
-        test_message = "This is a test memory for setup verification"
+        test_messages = [{"role": "user", "content": "This is a test memory for setup verification"}]
         
         print("🔍 Testing memory add operation...")
-        result = memory.add(test_message, user_id=test_user_id)
-        memory_id = result.get('id', 'unknown_id') if isinstance(result, dict) else 'unknown_id'
-        print(f"✅ Memory added successfully: {memory_id}")
+        result = memory.add(
+            messages=test_messages,
+            user_id=test_user_id
+        )
+        print(f"✅ Memory added successfully: {result.get('id', 'unknown_id')}")
         
         print("🔍 Testing memory retrieval...")
-        memories = memory.get_all(user_id=test_user_id, limit=10)
+        memories = memory.get_all(user_id=test_user_id)
         print(f"✅ Retrieved {len(memories)} memories for test user")
         
         print("🔍 Testing memory search...")
-        search_results = memory.search("test memory", user_id=test_user_id, limit=1)
+        search_results = memory.search(query="test memory", user_id=test_user_id, limit=1)
         print(f"✅ Search returned {len(search_results)} results")
         
         return True
         
     except Exception as e:
-        print(f"❌ mem0 MemoryClient initialization failed: {e}")
+        print(f"❌ mem0ai initialization failed: {e}")
         print("💡 Common issues:")
-        print("   - Invalid MEM0 API key")
-        print("   - Insufficient mem0 credits")
+        print("   - Invalid OpenAI API key")
+        print("   - Insufficient OpenAI credits")
         print("   - Network connectivity issues")
-        print("   - mem0 service unavailable")
+        print("   - Invalid configuration")
         return False
 
 def test_memory_manager():
@@ -126,7 +160,8 @@ def main():
     
     tests = [
         ("mem0ai Installation", test_mem0_installation),
-        ("MEM0 API Key", test_mem0_api_key),
+        ("OpenAI API Key", test_openai_api_key),
+        ("mem0 Configuration", test_mem0_config),
         ("mem0ai Initialization", test_mem0_initialization),
         ("MemoryManager Class", test_memory_manager)
     ]

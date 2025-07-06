@@ -15,7 +15,6 @@ class Settings:
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     GROQ_API_KEY = os.getenv("GROQ_API_KEY")
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-    MEM0_API_KEY = os.getenv("MEM0_API_KEY")
     
     # Default LLM Provider
     DEFAULT_LLM_PROVIDER = os.getenv("DEFAULT_LLM_PROVIDER", "openai")
